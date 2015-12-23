@@ -1,8 +1,8 @@
 # put.io automator #
 
 This small python application monitors a folder for torrent files. When one is saved there,
-it uploads the torrent file to put.io, which starts a transfer. Every minute or so, it
-checks your put.io files collection for new files and downloads one to a downloads folder.
+it uploads the torrent file to put.io, which starts a transfer. At a configurable interval, it
+checks your put.io files collection for new files and downloads them to a downloads folder.
 
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
