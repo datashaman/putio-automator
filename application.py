@@ -3,38 +3,56 @@ import logging
 import os
 import putio
 import pyinotify
+import sqlite3
+import time
 
 config = ConfigParser.ConfigParser()
 config.read('application.ini')
 
 settings = dict(config.items('settings'))
 
-logging.basicConfig(filename=settings.get('log_filename', None), level=logging.INFO)
+with sqlite3.connect(settings['database']) as connection:
+    c = connection.cursor()
 
-client = putio.Client(settings['putio_token'])
+    c.execute('create table if not exists downloads (id integer primary key, name character varying, size integer, created_at timestamp default current_timestamp)')
 
-def download_file(notifier):
-    files = client.File.list()
+    logging.basicConfig(filename=settings.get('log_filename', None), level=logging.DEBUG)
 
-    # Download and delete just one at a time
-    if len(files):
-        file = files[0]
-        logging.debug('downloading file: %s' % file)
-        file.download(dest=settings['downloads'], delete_after_download=True)
-        logging.info('downloaded file: %s' % file)
+    client = putio.Client(settings['putio_token'])
 
-class EventHandler(pyinotify.ProcessEvent):
-    def process_IN_CLOSE_WRITE(self, event):
-        logging.debug('received event: %s' % event)
-        transfer = client.Transfer.add_torrent(event.pathname)
-        logging.info('transfer added: %s' % transfer)
+    def download_files():
+        for file in client.File.list():
+            c.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (file.name, file.size))
+            row = c.fetchone()
 
-wm = pyinotify.WatchManager()
-mask = pyinotify.IN_CLOSE_WRITE
+            if row is None:
+                logging.debug('downloading file: %s' % file)
+                file.download(dest=settings['downloads'], delete_after_download=True)
+                logging.info('downloaded file: %s' % file)
+                c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (file.id, file.name, file.size))
+            else:
+                logging.warning('file downloaded at %s : %s' % (row[0], file))
 
-handler = EventHandler()
-notifier = pyinotify.Notifier(wm, handler)
+    class EventHandler(pyinotify.ProcessEvent):
+        def process_IN_CLOSE_WRITE(self, event):
+            logging.debug('received event: %s' % event)
+            transfer = client.Transfer.add_torrent(event.pathname)
+            logging.info('transfer added: %s' % transfer)
 
-wdd = wm.add_watch(settings['torrents'], mask, rec=True)
+    wm = pyinotify.WatchManager()
+    mask = pyinotify.IN_CLOSE_WRITE
 
-notifier.loop(download_file)
+    handler = EventHandler()
+    notifier = pyinotify.ThreadedNotifier(wm, handler)
+
+    download_files()
+
+    try:
+        notifier.start()
+        wdd = wm.add_watch(settings['torrents'], mask, rec=True)
+
+        while True:
+            time.sleep(float(settings.get('check_interval', 120)))
+            download_files()
+    finally:
+        notifier.stop()

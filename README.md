@@ -29,3 +29,9 @@ To get a put.io token [register your application](https://put.io/v2/oauth2/regis
 Run the application:
 
     python application.py
+
+The application checks if there are files available for download on put.io first. If so, the application downloads them.
+
+If the application has encountered a file before, it warns you and moves on. Downloads are recorded in a sqlite3 database: application.db (configurable).
+
+Once it has done the initial download, it starts the file watch notification loop, and then checks for new files at an interval configured with *check_interval*.

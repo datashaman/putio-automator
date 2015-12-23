@@ -1,5 +1,7 @@
 [settings]
+database=application.db
 log_filename=application.log
 putio_token=PUTIOTOKEN
 torrents=/folder/where/torrents/are/found
 downloads=/folder/where/downloads/are/saved
+check_interval=120
