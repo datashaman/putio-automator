@@ -32,3 +32,5 @@ To get a put.io token [register your application](https://put.io/v2/oauth2/regis
 Run the application:
 
     python application.py
+
+A supervisor conf file is available in etc/supervisor.conf
