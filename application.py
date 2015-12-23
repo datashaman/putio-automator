@@ -76,8 +76,12 @@ with sqlite3.connect(settings['database']) as connection:
     handler = EventHandler()
     notifier = pyinotify.ThreadedNotifier(wm, handler)
 
-    download_files()
     add_torrents()
+
+    # Take 10 seconds break (we might be able to download the added files already)
+    time.sleep(10.0)
+
+    download_files()
 
     try:
         notifier.start()
