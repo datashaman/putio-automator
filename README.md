@@ -9,7 +9,7 @@ monitor that folder and download to the same folder used for post-processing in 
 
 # Setup #
 
-Create a virtualenv (recommended):
+Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
 
     mkvirtualenv putio
 
