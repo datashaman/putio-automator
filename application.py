@@ -14,6 +14,7 @@ settings = dict(config.items('settings'))
 with sqlite3.connect(settings['database']) as connection:
     c = connection.cursor()
 
+    c.execute('create table if not exists torrents (name character varying primary key, size integer, created_at timestamp default current_timestamp)')
     c.execute('create table if not exists downloads (id integer primary key, name character varying, size integer, created_at timestamp default current_timestamp)')
 
     logging.basicConfig(filename=settings.get('log_filename', None), level=logging.DEBUG)
@@ -29,9 +30,39 @@ with sqlite3.connect(settings['database']) as connection:
                 logging.debug('downloading file: %s' % file)
                 file.download(dest=settings['downloads'], delete_after_download=True)
                 logging.info('downloaded file: %s' % file)
+
                 c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (file.id, file.name, file.size))
+                connection.commit()
             else:
                 logging.warning('file downloaded at %s : %s' % (row[0], file))
+
+    def add_torrents():
+        for name in os.listdir(settings['torrents']):
+            path = os.path.join(settings['torrents'], name)
+            size = os.path.getsize(path)
+
+            c.execute("select datetime(created_at, 'localtime') from torrents where name = ? and size = ?", (name, size))
+            row = c.fetchone()
+
+            if row is None:
+                logging.debug('adding torrent: %s' % name)
+
+                try:
+                    logging.info('adding torrent: %s' % path)
+                    transfer = client.Transfer.add_torrent(path)
+                    logging.info('added torrent: %s' % transfer)
+
+                    c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
+                    connection.commit()
+                except Exception, e:
+                    if e.message == 'BadRequest':
+                        # Assume it's already added
+                        logging.warning('torrent already added : %s' % (name,))
+
+                        c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
+                        connection.commit()
+            else:
+                logging.warning('torrent added at %s : %s' % (row[0], name))
 
     class EventHandler(pyinotify.ProcessEvent):
         def process_IN_CLOSE_WRITE(self, event):
@@ -46,6 +77,7 @@ with sqlite3.connect(settings['database']) as connection:
     notifier = pyinotify.ThreadedNotifier(wm, handler)
 
     download_files()
+    add_torrents()
 
     try:
         notifier.start()

@@ -37,6 +37,8 @@ The application checks if there are files available for download on put.io first
 
 If the application has encountered a file before, it warns you and moves on. Downloads are recorded in a sqlite3 database: application.db (configurable).
 
-Once it has done the initial download, it starts the file watch notification loop, and then checks for new files at an interval configured with *check_interval*.
+Once it has done the initial downloads, it checks the torrents folder to see if there are any it should upload, storing a record so it doesn't try to do it again.
+
+It then starts the file watch notification loop, and checks for new files at an interval configured with *check_interval*.
 
 A supervisor conf file is available in etc/supervisor.conf
