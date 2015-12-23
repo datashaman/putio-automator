@@ -1,12 +1,15 @@
-# put.io automater #
+# put.io automator #
 
 This small python application monitors a folder for torrent files. When one is saved there,
 it uploads the torrent file to put.io, which starts a transfer. Every minute or so, it
 checks your put.io files collection for new files and downloads one to a downloads folder.
 
+Configure Sickrage to use a Torrent black hole folder. Configure this application to
+monitor that folder and download to the same folder used for post-processing in Sickrage.
+
 # Setup #
 
-Create a virtualenv (recommended):
+Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
 
     mkvirtualenv putio
 
@@ -35,3 +38,5 @@ The application checks if there are files available for download on put.io first
 If the application has encountered a file before, it warns you and moves on. Downloads are recorded in a sqlite3 database: application.db (configurable).
 
 Once it has done the initial download, it starts the file watch notification loop, and then checks for new files at an interval configured with *check_interval*.
+
+A supervisor conf file is available in etc/supervisor.conf
