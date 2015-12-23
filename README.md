@@ -1,4 +1,4 @@
-# put.io automater #
+# put.io automator #
 
 This small python application monitors a folder for torrent files. When one is saved there,
 it uploads the torrent file to put.io, which starts a transfer. Every minute or so, it
