@@ -40,6 +40,9 @@ with sqlite3.connect(settings['database']) as connection:
             else:
                 logging.warning('file downloaded at %s : %s' % (row[0], file))
 
+    def clean_transfers():
+        client.Transfer.clean()
+
     def add_torrents():
         for name in os.listdir(settings['torrents']):
             path = os.path.join(settings['torrents'], name)
@@ -81,12 +84,11 @@ with sqlite3.connect(settings['database']) as connection:
     handler = EventHandler()
     notifier = pyinotify.ThreadedNotifier(wm, handler)
 
+    clean_transfers()
     add_torrents()
 
     # Take 10 seconds break (we might be able to download the added files already)
     time.sleep(10.0)
-
-    download_files()
 
     try:
         notifier.start()
