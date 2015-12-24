@@ -5,6 +5,7 @@ import putio
 import pyinotify
 import sqlite3
 import time
+import shutil
 
 config = ConfigParser.ConfigParser()
 config.read('application.ini')
@@ -28,8 +29,11 @@ with sqlite3.connect(settings['database']) as connection:
 
             if row is None:
                 logging.debug('downloading file: %s' % file)
-                file.download(dest=settings['downloads'], delete_after_download=True)
+                file.download(dest=settings['incomplete'], delete_after_download=True)
                 logging.info('downloaded file: %s' % file)
+
+                path = os.path.join(settings['incomplete'], file.name)
+                shutil.move(path, settings['downloads'])
 
                 c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (file.id, file.name, file.size))
                 connection.commit()
@@ -62,7 +66,8 @@ with sqlite3.connect(settings['database']) as connection:
                         c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
                         connection.commit()
             else:
-                logging.warning('torrent added at %s : %s' % (row[0], name))
+                os.unlink(path)
+                logging.warning('deleted torrent, added at %s : %s' % (row[0], name))
 
     class EventHandler(pyinotify.ProcessEvent):
         def process_IN_CLOSE_WRITE(self, event):
