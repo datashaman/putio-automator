@@ -37,17 +37,28 @@ Run the application (while in virtualenv):
 
 Where command is one of the following:
 
-* torrents_add
-  Adds existing torrents to put.io.
-* torrents_watch [ --add_first=True ]
-  Watches torrents folder to add to put.io. By default, adds existing torrents first.
-* transfers_cancel_seeding
-  Cancels seeding transfers on put.io.
-* transfers_clean
-  Cleans your transfers list on put.io.
-* transfers_groom
-  Cancels seeding and then cleans your transfers list on put.io.
-* files_download [ --limit n ]
-  Downloads files from put.io (optionally limited).
+*   torrents_add
+
+    Adds existing torrents to put.io.
+
+*   torrents_watch [ --add_first=True ]
+
+    Watches torrents folder to add to put.io. By default, adds existing torrents first.
+
+*   transfers_cancel_seeding
+
+    Cancels seeding transfers on put.io.
+
+*   transfers_clean
+
+    Cleans your transfers list on put.io.
+
+*   transfers_groom
+
+    Cancels seeding and then cleans your transfers list on put.io.
+
+*   files_download [ --limit n ]
+
+    Downloads files from put.io (optionally limited).
 
 If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
