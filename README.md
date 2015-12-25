@@ -1,19 +1,6 @@
 # put.io automator #
 
-This is a small flask application which contains the following commands:
-
-* manage.py torrents_add
-  Adds existing torrents to put.io.
-* manage.py torrents_watch [ --add_first=True ]
-  Watches torrents folder to add to put.io. By default, adds existing torrents first.
-* manage.py transfers_cancel_seeding
-  Cancels seeding transfers on put.io.
-* manage.py transfers_clean
-  Cleans your transfers list on put.io.
-* manage.py transfers_groom
-  Cancels seeding and then cleans your transfers list on put.io.
-* manage.py files_download [ --limit n ]
-  Downloads files from put.io (optionally limited).
+A suite of commands for managing torrents, transfers and files on put.io.
 
 The *etc* folder contains a supervisor config file for the watcher, and a cron file for cron.d with a suggested schedule. The cron file uses flock so the jobs don't run over eachother if they take a long time.
 
@@ -44,10 +31,23 @@ To get a put.io token [register your application](https://put.io/v2/oauth2/regis
 
 ## Run ##
 
-Run the application:
+Run the application (while in virtualenv):
 
-    python mmanage.py command
+    python manage.py command
 
-Where command is one of the above.
+Where command is one of the following:
+
+* torrents_add
+  Adds existing torrents to put.io.
+* torrents_watch [ --add_first=True ]
+  Watches torrents folder to add to put.io. By default, adds existing torrents first.
+* transfers_cancel_seeding
+  Cancels seeding transfers on put.io.
+* transfers_clean
+  Cleans your transfers list on put.io.
+* transfers_groom
+  Cancels seeding and then cleans your transfers list on put.io.
+* files_download [ --limit n ]
+  Downloads files from put.io (optionally limited).
 
 If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
