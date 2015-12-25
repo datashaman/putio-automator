@@ -2,14 +2,18 @@
 
 This is a small flask application which contains the following commands:
 
-* manage.py torrents_add - Adds existing torrents to put.io.
-* manage.py torrents_watch [ --add_first=True ] - Watches torrents folder to add to put.io. By default, adds existing torrents first.
-
-* manage.py transfers_cancel_seeding - Cancels seeding transfers on put.io.
-* manage.py transfers_clean - Cleans your transfers list on put.io.
-* manage.py transfers_groom - Cancels seeding and then cleans your transfers list on put.io.
-
-* manage.py files_download [ --limit n ] - Downloads files from put.io (optionally limited)
+* manage.py torrents_add
+  Adds existing torrents to put.io.
+* manage.py torrents_watch [ --add_first=True ]
+  Watches torrents folder to add to put.io. By default, adds existing torrents first.
+* manage.py transfers_cancel_seeding
+  Cancels seeding transfers on put.io.
+* manage.py transfers_clean
+  Cleans your transfers list on put.io.
+* manage.py transfers_groom
+  Cancels seeding and then cleans your transfers list on put.io.
+* manage.py files_download [ --limit n ]
+  Downloads files from put.io (optionally limited).
 
 The *etc* folder contains a supervisor config file for the watcher, and a cron file for cron.d with a suggested schedule. The cron file uses flock so the jobs don't run over eachother if they take a long time.
 
