@@ -11,10 +11,12 @@ This is a small flask application which contains the following commands:
 
 * manage.py files_download [ --limit n ] - Downloads files from put.io (optionally limited)
 
-The *etc* folder contains a supervisor config file for the watcher, and a cron file for cron.d with a suggested schedule.
+The *etc* folder contains a supervisor config file for the watcher, and a cron file for cron.d with a suggested schedule. The cron file uses flock so the jobs don't run over eachother if they take a long time.
 
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
+
+To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on *nix cron to schedule things than to fiddle with threads.
 
 # Setup #
 
