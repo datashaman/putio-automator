@@ -2,3 +2,4 @@ application.db
 application.ini
 application.log
 supervisor.log
+supervisor.log.*

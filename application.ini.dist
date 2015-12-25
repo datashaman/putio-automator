@@ -5,4 +5,6 @@ putio_token=PUTIOTOKEN
 incomplete=/folder/where/incomplete/downloads/are/saved
 torrents=/folder/where/torrents/are/found
 downloads=/folder/where/downloads/are/saved
-check_interval=120
+clean_interval=10
+download_interval=120
+download_limit=2

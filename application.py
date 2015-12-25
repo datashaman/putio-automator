@@ -22,8 +22,16 @@ with sqlite3.connect(settings['database']) as connection:
 
     client = putio.Client(settings['putio_token'])
 
+    clean_interval = float(settings.get('clean_interval', 10))
+    download_interval = float(settings.get('download_interval', 120))
+
     def download_files():
-        for file in client.File.list():
+        files = client.File.list()
+
+        downloaded = 0
+        download_limit = settings.get('download_limit')
+
+        for file in files:
             c.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (file.name, file.size))
             row = c.fetchone()
 
@@ -37,10 +45,24 @@ with sqlite3.connect(settings['database']) as connection:
 
                 c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (file.id, file.name, file.size))
                 connection.commit()
+
+                if download_limit is not None:
+                    downloaded = downloaded + 1
+
+                    if downloaded > download_limit:
+                        break
             else:
                 logging.warning('file downloaded at %s : %s' % (row[0], file))
 
     def clean_transfers():
+        transfer_ids = []
+        for transfer in client.Transfer.list():
+            if transfer.status == 'SEEDING':
+                transfer_ids.append(transfer.id)
+
+        if len(transfer_ids):
+            client.Transfer.cancel(transfer_ids)
+
         client.Transfer.clean()
 
     def add_torrents():
@@ -58,44 +80,49 @@ with sqlite3.connect(settings['database']) as connection:
                     logging.info('adding torrent: %s' % path)
                     transfer = client.Transfer.add_torrent(path)
                     logging.info('added torrent: %s' % transfer)
-
-                    c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
-                    connection.commit()
                 except Exception, e:
                     if e.message == 'BadRequest':
                         # Assume it's already added
-                        logging.warning('torrent already added : %s' % (name,))
+                        os.unlink(path)
+                        logging.warning('deleted torrent, already added : %s' % (name,))
+                    else:
+                        raise e
 
-                        c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
-                        connection.commit()
+                c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
+                connection.commit()
             else:
                 os.unlink(path)
                 logging.warning('deleted torrent, added at %s : %s' % (row[0], name))
 
-    class EventHandler(pyinotify.ProcessEvent):
-        def process_IN_CLOSE_WRITE(self, event):
-            logging.debug('received event: %s' % event)
-            transfer = client.Transfer.add_torrent(event.pathname)
-            logging.info('transfer added: %s' % transfer)
+    def watch_torrents():
+        class EventHandler(pyinotify.ProcessEvent):
+            def process_IN_CLOSE_WRITE(self, event):
+                logging.debug('received event: %s' % event)
+                transfer = client.Transfer.add_torrent(event.pathname)
+                logging.info('transfer added: %s' % transfer)
 
-    wm = pyinotify.WatchManager()
-    mask = pyinotify.IN_CLOSE_WRITE
+        wm = pyinotify.WatchManager()
+        mask = pyinotify.IN_CLOSE_WRITE
 
-    handler = EventHandler()
-    notifier = pyinotify.ThreadedNotifier(wm, handler)
+        handler = EventHandler()
+        notifier = pyinotify.ThreadedNotifier(wm, handler)
+
+        try:
+            notifier.start()
+            wdd = wm.add_watch(settings['torrents'], mask, rec=True)
+
+            while True:
+                for x in xrange(int(download_interval) / int(clean_interval) - 1):
+                    time.sleep(clean_interval)
+                    clean_transfers()
+
+                download_files()
+        finally:
+            notifier.stop()
 
     clean_transfers()
     add_torrents()
 
-    # Take 10 seconds break (we might be able to download the added files already)
-    time.sleep(10.0)
-
-    try:
-        notifier.start()
-        wdd = wm.add_watch(settings['torrents'], mask, rec=True)
-
-        while True:
-            time.sleep(float(settings.get('check_interval', 120)))
-            download_files()
-    finally:
-        notifier.stop()
+    time.sleep(clean_interval)
+    download_files()
+    watch_torrents()
