@@ -1,8 +1,17 @@
 # put.io automator #
 
-This small python application monitors a folder for torrent files. When one is saved there,
-it uploads the torrent file to put.io, which starts a transfer. At a configurable interval, it
-checks your put.io files collection for new files and downloads them to a downloads folder.
+This is a small flask application which contains the following commands:
+
+* manage.py torrents_add - Adds existing torrents to put.io.
+* manage.py torrents_watch [ --add_first=True ] - Watches torrents folder to add to put.io. By default, adds existing torrents first.
+
+* manage.py transfers_cancel_seeding - Cancels seeding transfers on put.io.
+* manage.py transfers_clean - Cleans your transfers list on put.io.
+* manage.py transfers_groom - Cancels seeding and then cleans your transfers list on put.io.
+
+* manage.py files_download [ --limit n ] - Downloads files from put.io (optionally limited)
+
+The *etc* folder contains a supervisor config file for the watcher, and a cron file for cron.d with a suggested schedule.
 
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
@@ -19,11 +28,11 @@ Install the package requirements (while being in the virtualenv):
 
 # Configure #
 
-Copy the distributed .ini file:
+Copy the distributed config file:
 
-    cp application.ini.dist application.ini
+    cp config.py.dist config.py
 
-Edit the config settings in the file. If you do not specify a log_filename, the application will log to the console.
+Edit the config in the file. If you do not specify a LOG_FILENAME, the application will log to the console.
 
 To get a put.io token [register your application](https://put.io/v2/oauth2/register) in put.io, and copy the *Oauth token*.
 
@@ -31,14 +40,8 @@ To get a put.io token [register your application](https://put.io/v2/oauth2/regis
 
 Run the application:
 
-    python application.py
+    python mmanage.py command
 
-The application checks if there are files available for download on put.io first. If so, the application downloads them.
+Where command is one of the above.
 
-If the application has encountered a file before, it warns you and moves on. Downloads are recorded in a sqlite3 database: application.db (configurable).
-
-Once it has done the initial downloads, it checks the torrents folder to see if there are any it should upload, storing a record so it doesn't try to do it again.
-
-It then starts the file watch notification loop, and checks for new files at an interval configured with *check_interval*.
-
-A supervisor conf file is available in etc/supervisor.conf
+If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).

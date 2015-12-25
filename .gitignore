@@ -1,4 +1,7 @@
+*pyc
+
 application.db
-application.ini
 application.log
+config.py
 supervisor.log
+supervisor.log.*

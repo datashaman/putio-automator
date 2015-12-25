@@ -1,0 +1,9 @@
+import logging
+
+DATABASE = 'application.db'
+LOG_FILENAME = None
+LOG_LEVEL = logging.WARNING
+PUTIO_TOKEN = 'TOKEN'
+INCOMPLETE = '/somefolder/Incomplete'
+TORRENTS = '/somefolder/Torrents'
+DOWNLOADS = '/somefolder/Downloads'

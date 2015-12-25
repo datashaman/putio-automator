@@ -1,2 +1,4 @@
-putio.py
+git+git://github.com/datashaman/putio.py.git#egg putio.py
 pyinotify
+Flask
+Flask-Script
