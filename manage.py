@@ -4,6 +4,7 @@ import logging
 import os
 import putio
 import pyinotify
+import shutil
 import sqlite3
 
 from flask import *
