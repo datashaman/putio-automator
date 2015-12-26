@@ -85,7 +85,8 @@ def torrents_watch(add_existing=True):
         def process_IN_CLOSE_WRITE(self, event):
             app.logger.debug('received event: %s' % event)
             transfer = client.Transfer.add_torrent(event.pathname)
-            app.logger.info('transfer added: %s' % transfer)
+            os.unlink(event.pathname)
+            app.logger.info('deleted torrent, added: %s' % transfer)
 
     wm = pyinotify.WatchManager()
     mask = pyinotify.IN_CLOSE_WRITE
