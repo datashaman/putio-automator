@@ -7,17 +7,18 @@ import pyinotify
 import shutil
 import sqlite3
 
-from flask import *
+from flask import g
 from flask.ext.script import Manager
 
-app = Flask(__name__)
+from app import app, init_db
 
-app.logger.setLevel(logging.DEBUG)
-app.config.from_object('config')
+client = None
 
-logging.basicConfig(filename=app.config.get('LOG_FILENAME'), level=app.config.get('LOG_LEVEL', logging.WARNING))
-
-client = putio.Client(app.config['PUTIO_TOKEN'])
+def init_client(c=None):
+    if c is None:
+        c = putio.Client(app.config['PUTIO_TOKEN'])
+    client = c
+    return c
 
 manager = Manager(app)
 
@@ -42,6 +43,7 @@ def transfers_groom():
 
 @manager.command
 def torrents_add():
+    print client
     files = os.listdir(app.config['TORRENTS'])
 
     if len(files):
@@ -134,4 +136,8 @@ def files_download(limit=None):
                     app.logger.warning('file downloaded at %s : %s' % (row[0], file))
 
 if __name__ == '__main__':
+    init_db()
+    init_client()
+    app.logger.setLevel(logging.DEBUG)
+    logging.basicConfig(filename=app.config.get('LOG_FILENAME'), level=app.config.get('LOG_LEVEL', logging.WARNING))
     manager.run()
