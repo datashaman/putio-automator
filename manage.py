@@ -15,6 +15,8 @@ from app import app, init_db
 client = None
 
 def init_client(c=None):
+    global client
+
     if c is None:
         c = putio.Client(app.config['PUTIO_TOKEN'])
     client = c
@@ -43,7 +45,6 @@ def transfers_groom():
 
 @manager.command
 def torrents_add():
-    print client
     files = os.listdir(app.config['TORRENTS'])
 
     if len(files):
@@ -138,6 +139,5 @@ def files_download(limit=None):
 if __name__ == '__main__':
     init_db()
     init_client()
-    app.logger.setLevel(logging.DEBUG)
     logging.basicConfig(filename=app.config.get('LOG_FILENAME'), level=app.config.get('LOG_LEVEL', logging.WARNING))
     manager.run()

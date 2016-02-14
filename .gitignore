@@ -5,3 +5,4 @@ application.log
 config.py
 supervisor.log
 supervisor.log.*
+tmp/
