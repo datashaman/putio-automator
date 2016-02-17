@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 import json
 import logging
 import os
@@ -12,6 +13,12 @@ from flask import g
 from flask.ext.script import Manager
 
 from app import app, init_db
+
+def date_handler(obj):
+    if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
+        return obj.isoformat()
+    else:
+        return None
 
 client = None
 
@@ -106,10 +113,10 @@ def torrents_watch(add_existing=True):
 @manager.command
 def files_list():
     files = client.File.list()
-    print json.dumps([f for f in files])
+    print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
 
 @manager.command
-def files_download(limit=None):
+def files_download(limit=None, chunk_size=256*1024):
     files = client.File.list()
 
     if len(files):
@@ -125,7 +132,7 @@ def files_download(limit=None):
 
                 if row is None:
                     app.logger.debug('downloading file: %s' % file)
-                    file.download(dest=app.config['INCOMPLETE'], delete_after_download=True)
+                    file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size))
                     app.logger.info('downloaded file: %s' % file)
 
                     path = os.path.join(app.config['INCOMPLETE'], file.name)
