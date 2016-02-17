@@ -103,7 +103,7 @@ def torrents_watch(add_existing=True):
     notifier.loop()
 
 @manager.command
-def files_download(limit=None):
+def files_download(limit=None, chunk_size=256*1024):
     files = client.File.list()
 
     if len(files):
@@ -119,7 +119,7 @@ def files_download(limit=None):
 
                 if row is None:
                     app.logger.debug('downloading file: %s' % file)
-                    file.download(dest=app.config['INCOMPLETE'], delete_after_download=True)
+                    file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size))
                     app.logger.info('downloaded file: %s' % file)
 
                     path = os.path.join(app.config['INCOMPLETE'], file.name)
