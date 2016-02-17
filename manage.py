@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import logging
 import os
 import putio
@@ -101,6 +102,11 @@ def torrents_watch(add_existing=True):
     app.logger.debug('added watch: %s' % wdd)
 
     notifier.loop()
+
+@manager.command
+def files_list():
+    files = client.File.list()
+    print json.dumps([f for f in files])
 
 @manager.command
 def files_download(limit=None):
