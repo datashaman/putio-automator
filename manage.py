@@ -14,6 +14,10 @@ from flask.ext.script import Manager
 
 from app import app, init_db
 
+logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
+                    level=app.config.get('LOG_LEVEL', logging.WARNING),
+                    format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
+
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
         return obj.isoformat()
@@ -147,10 +151,9 @@ def files_download(limit=None, chunk_size=256*1024):
                         if downloaded > limit:
                             break
                 else:
-                    app.logger.warning('file downloaded at %s : %s' % (row[0], file))
+                    app.logger.warning('file already downloaded at %s : %s' % (row[0], file))
 
 if __name__ == '__main__':
     init_db()
     init_client()
-    logging.basicConfig(filename=app.config.get('LOG_FILENAME'), level=app.config.get('LOG_LEVEL', logging.WARNING))
     manager.run()
