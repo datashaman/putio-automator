@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import datetime
+import json
 import logging
 import os
 import putio
@@ -11,6 +13,16 @@ from flask import g
 from flask.ext.script import Manager
 
 from app import app, init_db
+
+logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
+                    level=app.config.get('LOG_LEVEL', logging.WARNING),
+                    format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
+
+def date_handler(obj):
+    if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
+        return obj.isoformat()
+    else:
+        return None
 
 client = None
 
@@ -59,8 +71,6 @@ def torrents_add():
                 row = c.fetchone()
 
                 if row is None:
-                    app.logger.debug('adding torrent: %s' % name)
-
                     try:
                         app.logger.info('adding torrent: %s' % path)
                         transfer = client.Transfer.add_torrent(path)
@@ -103,6 +113,11 @@ def torrents_watch(add_existing=True):
     notifier.loop()
 
 @manager.command
+def files_list():
+    files = client.File.list()
+    print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
+
+@manager.command
 def files_download(limit=None, chunk_size=256*1024):
     files = client.File.list()
 
@@ -113,19 +128,19 @@ def files_download(limit=None, chunk_size=256*1024):
 
             c = connection.cursor()
 
-            for file in files:
-                c.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (file.name, file.size))
+            for f in files:
+                c.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (f.name, f.size))
                 row = c.fetchone()
 
                 if row is None:
-                    app.logger.debug('downloading file: %s' % file)
-                    file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size))
-                    app.logger.info('downloaded file: %s' % file)
+                    app.logger.debug('downloading file: %s' % f)
+                    f.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size))
+                    app.logger.info('downloaded file: %s' % f)
 
-                    path = os.path.join(app.config['INCOMPLETE'], file.name)
+                    path = os.path.join(app.config['INCOMPLETE'], f.name)
                     shutil.move(path, app.config['DOWNLOADS'])
 
-                    c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (file.id, file.name, file.size))
+                    c.execute('insert into downloads (id, name, size) values (?, ?, ?)', (f.id, f.name, f.size))
                     connection.commit()
 
                     if limit is not None:
@@ -134,10 +149,9 @@ def files_download(limit=None, chunk_size=256*1024):
                         if downloaded > limit:
                             break
                 else:
-                    app.logger.warning('file downloaded at %s : %s' % (row[0], file))
+                    app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
 
 if __name__ == '__main__':
     init_db()
     init_client()
-    logging.basicConfig(filename=app.config.get('LOG_FILENAME'), level=app.config.get('LOG_LEVEL', logging.WARNING))
     manager.run()
