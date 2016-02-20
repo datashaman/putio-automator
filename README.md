@@ -59,6 +59,10 @@ Where command is one of the following:
 
     Downloads files from put.io (optionally limited, or with chunk size of 256KB).
 
+*   **files_list**
+
+    Shows JSON of the files available for download on put.io.
+
 If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
 
 ## Operations
