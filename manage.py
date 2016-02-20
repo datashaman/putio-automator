@@ -72,10 +72,10 @@ def torrents_add():
 
                 if row is None:
                     try:
-                        app.logger.info('adding torrent: %s' % path)
+                        app.logger.debug('adding torrent: %s' % path)
                         transfer = client.Transfer.add_torrent(path)
                         os.unlink(path)
-                        app.logger.info('deleted torrent, added: %s' % transfer)
+                        app.logger.info('added transfer: %s' % transfer)
                     except Exception, e:
                         if e.message == 'BadRequest':
                             # Assume it's already added
@@ -96,10 +96,10 @@ def torrents_watch(add_existing=True):
 
     class EventHandler(pyinotify.ProcessEvent):
         def process_IN_CLOSE_WRITE(self, event):
-            app.logger.debug('received event: %s' % event)
+            app.logger.debug('adding torrent, received event: %s' % event)
             transfer = client.Transfer.add_torrent(event.pathname)
             os.unlink(event.pathname)
-            app.logger.info('deleted torrent, added: %s' % transfer)
+            app.logger.info('added transfer: %s' % transfer)
 
     wm = pyinotify.WatchManager()
     mask = pyinotify.IN_CLOSE_WRITE
@@ -120,6 +120,7 @@ def files_list():
 @manager.command
 def files_download(limit=None, chunk_size=256*1024):
     files = client.File.list()
+    app.logger.info('%s files found' % len(files))
 
     if len(files):
         with sqlite3.connect(app.config['DATABASE']) as connection:
