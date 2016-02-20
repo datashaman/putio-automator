@@ -1,4 +1,4 @@
-# put.io automator #
+# put.io automator
 
 A suite of commands for managing torrents, transfers and files on put.io.
 
@@ -7,7 +7,7 @@ monitor that folder and download to the same folder used for post-processing in 
 
 To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on *nix cron to schedule things than to fiddle with threads.
 
-# Setup #
+## Setup
 
 Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
 
@@ -17,7 +17,7 @@ Install the package requirements (while being in the virtualenv):
 
     pip install -r requirements.txt
 
-# Configure #
+## Configure
 
 Copy the distributed config file:
 
@@ -27,7 +27,7 @@ Edit the config in the file. If you do not specify a LOG_FILENAME, the applicati
 
 To get a put.io token [register your application](https://put.io/v2/oauth2/register) in put.io, and copy the *Oauth token*.
 
-## Run ##
+## Run
 
 Run the application (while in virtualenv):
 
@@ -61,7 +61,7 @@ Where command is one of the following:
 
 If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
 
-# Operations #
+## Operations
 
 The *etc* folder contains a supervisor config file for a watcher and a downloader, as well as a cron file for cron.d with a suggested schedule.
 
