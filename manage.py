@@ -118,7 +118,7 @@ def files_list():
     print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
 
 @manager.command
-def files_download(limit=None, chunk_size=256*1024):
+def files_download(limit=None, chunk_size=256):
     files = client.File.list()
     app.logger.info('%s files found' % len(files))
 
@@ -135,7 +135,7 @@ def files_download(limit=None, chunk_size=256*1024):
 
                 if row is None:
                     app.logger.debug('downloading file: %s' % f)
-                    f.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size))
+                    f.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
                     app.logger.info('downloaded file: %s' % f)
 
                     path = os.path.join(app.config['INCOMPLETE'], f.name)
