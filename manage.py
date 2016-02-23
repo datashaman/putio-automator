@@ -37,14 +37,22 @@ def init_client(c=None):
 manager = Manager(app)
 
 @manager.command
-def transfers_cancel_seeding():
+def transfers_cancel(status):
     transfer_ids = []
     for transfer in client.Transfer.list():
-        if transfer.status == 'SEEDING':
+        if transfer.status == status:
             transfer_ids.append(transfer.id)
 
     if len(transfer_ids):
         client.Transfer.cancel(transfer_ids)
+
+@manager.command
+def transfers_cancel_seeding():
+    transfers_cancel('SEEDING')
+
+@manager.command
+def transfers_cancel_completed():
+    transfers_cancel('COMPLETED')
 
 @manager.command
 def transfers_clean():
@@ -53,6 +61,7 @@ def transfers_clean():
 @manager.command
 def transfers_groom():
     transfers_cancel_seeding()
+    transfers_cancel_completed()
     transfers_clean()
 
 @manager.command
