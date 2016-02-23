@@ -43,9 +43,17 @@ Where command is one of the following:
 
     Watches torrents folder to add to put.io. By default, adds existing torrents first.
 
+*   **transfers_cancel_completed**
+
+    Cancels completed transfers on put.io.
+
 *   **transfers_cancel_seeding**
 
     Cancels seeding transfers on put.io.
+
+*   **transfers_cancel_by_status status**
+
+    Cancels transfers on put.io with a specific status.
 
 *   **transfers_clean**
 

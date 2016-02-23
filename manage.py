@@ -37,7 +37,7 @@ def init_client(c=None):
 manager = Manager(app)
 
 @manager.command
-def transfers_cancel(status):
+def transfers_cancel_by_status(status):
     transfer_ids = []
     for transfer in client.Transfer.list():
         if transfer.status == status:
@@ -48,11 +48,11 @@ def transfers_cancel(status):
 
 @manager.command
 def transfers_cancel_seeding():
-    transfers_cancel('SEEDING')
+    transfers_cancel_by_status('SEEDING')
 
 @manager.command
 def transfers_cancel_completed():
-    transfers_cancel('COMPLETED')
+    transfers_cancel_by_status('COMPLETED')
 
 @manager.command
 def transfers_clean():
