@@ -30,21 +30,24 @@ def init_client(c=None):
     global client
 
     if c is None:
-        c = putio.Client(app.config['PUTIO_TOKEN'])
+        c = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
     client = c
     return c
 
 manager = Manager(app)
 
 @manager.command
-def transfers_cancel_by_status(status):
+def transfers_cancel_by_status(statuses):
+    if isinstance(statuses, str):
+        statuses = statuses.split(',')
+
     transfer_ids = []
     for transfer in client.Transfer.list():
-        if transfer.status == status:
-            transfer_ids.append(transfer.id)
+        if transfer.status in statuses:
+            transfer_ids.append(str(transfer.id))
 
     if len(transfer_ids):
-        client.Transfer.cancel(transfer_ids)
+        client.Transfer.cancel_multi(transfer_ids)
 
 @manager.command
 def transfers_cancel_seeding():
@@ -60,8 +63,7 @@ def transfers_clean():
 
 @manager.command
 def transfers_groom():
-    transfers_cancel_seeding()
-    transfers_cancel_completed()
+    transfers_cancel_by_status([ 'SEEDING', 'COMPLETED' ])
     transfers_clean()
 
 @manager.command

@@ -5,7 +5,7 @@ A suite of commands for managing torrents, transfers and files on put.io.
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
 
-To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on *nix cron to schedule things than to fiddle with threads.
+To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on cron to schedule things than to fiddle with threads.
 
 ## Setup
 
@@ -51,9 +51,9 @@ Where command is one of the following:
 
     Cancels seeding transfers on put.io.
 
-*   **transfers_cancel_by_status status**
+*   **transfers_cancel_by_status status[,status]**
 
-    Cancels transfers on put.io with a specific status.
+    Cancels transfers on put.io with a specific statuses (comma delimited list, no spaces).
 
 *   **transfers_clean**
 
