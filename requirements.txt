@@ -1,4 +1,5 @@
-git+git://github.com/datashaman/putio.py.git#egg putio.py
+putio.py>=2.4.0
+requests
 pyinotify
 Flask
 Flask-Script

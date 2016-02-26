@@ -2,6 +2,7 @@ APP=/opt/putio-automator
 HOME=/home/user
 VIRTUALENV=putio-automator
 
-*/20 * * * * user cd $APP && flock -n /tmp/transfers_groom.lock $HOME/.virtualenvs/$VIRTUALENV/bin/python manage.py transfers_groom
-0 */2 * * * user cd $APP && flock -n /tmp/files_download.lock $HOME/.virtualenvs/$VIRTUALENV/bin/python manage.py files_download -l 5
+50 * * * * user cd $APP && flock -n /tmp/transfers_groom.lock $HOME/.virtualenvs/$VIRTUALENV/bin/python manage.py transfers_groom
+5 0 * * * root supervisorctl start downloader
+55 5 * * * root supervisorctl stop downloader
 
