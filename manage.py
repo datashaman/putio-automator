@@ -9,6 +9,7 @@ import putio
 import pyinotify
 import shutil
 import sqlite3
+import subprocess
 
 from app import app, init_db
 from json import load
@@ -40,10 +41,12 @@ def init_client(c=None):
 
 hooks = Hooks(app, url='/hooks')
 
-@hooks.hook('ping')
-def ping(data, guid):
-    print data, guid
-    return 'pong'
+@hooks.hook('push')
+def push(data, guid):
+    if app.config['DEPLOY_DEVELOP'] and data['ref'] == 'refs/heads/develop':
+        subprocess.call('git pull'.split(' '))
+        
+    return 'OK'
 
 manager = Manager(app)
 
