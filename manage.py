@@ -14,6 +14,7 @@ from app import app, init_db
 from json import load
 from urllib2 import urlopen
 from flask import g
+from flask.ext.hookserver import Hooks
 from flask.ext.script import Manager
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
@@ -36,6 +37,13 @@ def init_client(c=None):
         c = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
     client = c
     return c
+
+hooks = Hooks(app, url='/hooks')
+
+@hooks.hook('ping')
+def ping(data, guid):
+    print data, guid
+    return 'pong'
 
 manager = Manager(app)
 
