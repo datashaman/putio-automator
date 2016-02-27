@@ -93,3 +93,5 @@ If the *downloader* fails partway through downloading a file, it will resume fro
 The chunk size for HTTP traffic is set to *256KB* by default, YMMV. You can change the default in the *files_download* command.
 
 Downloaded files are only deleted from the server if they are the correct expected size and they pass CRC32 verification. A log warning is written for files that fail verification. You must manually remove the corrupted file, the command won't delete it for you.
+
+Testing IFTTT
