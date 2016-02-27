@@ -10,6 +10,7 @@ import shutil
 import sqlite3
 
 from flask import g
+from flask.ext.hookserver import Hooks
 from flask.ext.script import Manager
 
 from app import app, init_db
@@ -34,6 +35,13 @@ def init_client(c=None):
     client = c
     return c
 
+hooks = Hooks(app, url='/hooks')
+
+@hooks.hook('ping')
+def ping(data, guid):
+    print data, guid
+    return 'pong'
+
 manager = Manager(app)
 
 @manager.command
@@ -44,7 +52,7 @@ def transfers_cancel_by_status(statuses):
     transfer_ids = []
     for transfer in client.Transfer.list():
         if transfer.status in statuses:
-            transfer_ids.append(str(transfer.id))
+            transfer_ids.append(transfer.id)
 
     if len(transfer_ids):
         client.Transfer.cancel_multi(transfer_ids)

@@ -1,5 +1,7 @@
-putio.py>=2.4.0
+ipaddress
+putio.py>=2.4.1
 requests
 pyinotify
 Flask
 Flask-Script
+Flask-Hookserver
