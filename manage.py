@@ -4,19 +4,22 @@ import datetime
 import json
 import logging
 import os
+import miniupnpc
 import putio
 import pyinotify
 import shutil
 import sqlite3
 
+from app import app, init_db
+from json import load
+from urllib2 import urlopen
 from flask import g
 from flask.ext.script import Manager
-
-from app import app, init_db
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
                     format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
+
 
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
@@ -44,7 +47,7 @@ def transfers_cancel_by_status(statuses):
     transfer_ids = []
     for transfer in client.Transfer.list():
         if transfer.status in statuses:
-            transfer_ids.append(str(transfer.id))
+            transfer_ids.append(transfer.id)
 
     if len(transfer_ids):
         client.Transfer.cancel_multi(transfer_ids)
@@ -162,6 +165,25 @@ def files_download(limit=None, chunk_size=256):
                             break
                 else:
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
+
+@manager.command
+def upnp_add_mapping(port=None):
+    if port is None:
+        port = app.config['UPNP_PORT']
+
+    upnp = miniupnpc.UPnP()
+
+    upnp.discoverdelay = 10
+    upnp.discover()
+
+    upnp.selectigd()
+
+    if upnp.addportmapping(port, 'TCP', upnp.lanaddr, port, 'putio-automator', ''):
+        app.logger.info('Mapped %d %s on %s to external port %s described as %s' % (port, 'TCP', upnp.lanaddr, port, 'putio-automator'))
+
+@app.route('/')
+def home():
+    return 'OK'
 
 if __name__ == '__main__':
     init_db()

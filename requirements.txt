@@ -1,5 +1,6 @@
-putio.py>=2.4.0
+putio.py>=2.4.1
 requests
 pyinotify
 Flask
 Flask-Script
+miniupnpc
