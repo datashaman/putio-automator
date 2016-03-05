@@ -4,20 +4,24 @@ import datetime
 import json
 import logging
 import os
+import miniupnpc
 import putio
 import pyinotify
 import shutil
 import sqlite3
+import subprocess
 
+from app import app, init_db
+from json import load
+from urllib2 import urlopen
 from flask import g
 from flask.ext.hookserver import Hooks
 from flask.ext.script import Manager
 
-from app import app, init_db
-
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
                     format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
+
 
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
@@ -37,10 +41,12 @@ def init_client(c=None):
 
 hooks = Hooks(app, url='/hooks')
 
-@hooks.hook('ping')
-def ping(data, guid):
-    print data, guid
-    return 'pong'
+@hooks.hook('push')
+def push(data, guid):
+    if app.config['DEPLOY_DEVELOP'] and data['ref'] == 'refs/heads/develop':
+        subprocess.call('git pull'.split(' '))
+        
+    return 'OK'
 
 manager = Manager(app)
 
@@ -170,6 +176,25 @@ def files_download(limit=None, chunk_size=256):
                             break
                 else:
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
+
+@manager.command
+def upnp_add_mapping(port=None):
+    if port is None:
+        port = app.config['UPNP_PORT']
+
+    upnp = miniupnpc.UPnP()
+
+    upnp.discoverdelay = 10
+    upnp.discover()
+
+    upnp.selectigd()
+
+    if upnp.addportmapping(port, 'TCP', upnp.lanaddr, port, 'putio-automator', ''):
+        app.logger.info('Mapped %d %s on %s to external port %s described as %s' % (port, 'TCP', upnp.lanaddr, port, 'putio-automator'))
+
+@app.route('/')
+def home():
+    return 'OK'
 
 if __name__ == '__main__':
     init_db()
