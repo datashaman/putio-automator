@@ -15,8 +15,8 @@ from app import app, init_db
 from json import load
 from urllib2 import urlopen
 from flask import g
-from flask.ext.hookserver import Hooks
-from flask.ext.script import Manager
+from flask_hookserver import Hooks
+from flask_script import Manager
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
