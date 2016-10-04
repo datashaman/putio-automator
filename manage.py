@@ -15,8 +15,8 @@ from app import app, init_db
 from json import load
 from urllib2 import urlopen
 from flask import g
-from flask.ext.hookserver import Hooks
-from flask.ext.script import Manager
+from flask_hookserver import Hooks
+from flask_script import Manager
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
@@ -138,13 +138,13 @@ def torrents_watch(add_existing=True):
     notifier.loop()
 
 @manager.command
-def files_list():
-    files = client.File.list()
+def files_list(parent_id=0):
+    files = client.File.list(parent_id)
     print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
 
 @manager.command
-def files_download(limit=None, chunk_size=256):
-    files = client.File.list()
+def files_download(limit=None, chunk_size=256, parent_id=0):
+    files = client.File.list(parent_id)
     app.logger.info('%s files found' % len(files))
 
     if len(files):
