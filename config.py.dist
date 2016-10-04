@@ -7,3 +7,5 @@ PUTIO_TOKEN = 'TOKEN'
 INCOMPLETE = '/somefolder/Incomplete'
 TORRENTS = '/somefolder/Torrents'
 DOWNLOADS = '/somefolder/Downloads'
+
+UPNP_PORT = 42000

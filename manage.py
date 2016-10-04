@@ -4,19 +4,24 @@ import datetime
 import json
 import logging
 import os
+import miniupnpc
 import putio
 import pyinotify
 import shutil
 import sqlite3
-
-from flask import g
-from flask.ext.script import Manager
+import subprocess
 
 from app import app, init_db
+from json import load
+from urllib2 import urlopen
+from flask import g
+from flask_hookserver import Hooks
+from flask_script import Manager
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
                     format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
+
 
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
@@ -34,6 +39,15 @@ def init_client(c=None):
     client = c
     return c
 
+hooks = Hooks(app, url='/hooks')
+
+@hooks.hook('push')
+def push(data, guid):
+    if app.config['DEPLOY_DEVELOP'] and data['ref'] == 'refs/heads/develop':
+        subprocess.call('git pull'.split(' '))
+        
+    return 'OK'
+
 manager = Manager(app)
 
 @manager.command
@@ -44,7 +58,7 @@ def transfers_cancel_by_status(statuses):
     transfer_ids = []
     for transfer in client.Transfer.list():
         if transfer.status in statuses:
-            transfer_ids.append(str(transfer.id))
+            transfer_ids.append(transfer.id)
 
     if len(transfer_ids):
         client.Transfer.cancel_multi(transfer_ids)
@@ -124,13 +138,13 @@ def torrents_watch(add_existing=True):
     notifier.loop()
 
 @manager.command
-def files_list():
-    files = client.File.list()
+def files_list(parent_id=0):
+    files = client.File.list(parent_id)
     print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
 
 @manager.command
-def files_download(limit=None, chunk_size=256):
-    files = client.File.list()
+def files_download(limit=None, chunk_size=256, parent_id=0):
+    files = client.File.list(parent_id)
     app.logger.info('%s files found' % len(files))
 
     if len(files):
@@ -162,6 +176,25 @@ def files_download(limit=None, chunk_size=256):
                             break
                 else:
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
+
+@manager.command
+def upnp_add_mapping(port=None):
+    if port is None:
+        port = app.config['UPNP_PORT']
+
+    upnp = miniupnpc.UPnP()
+
+    upnp.discoverdelay = 10
+    upnp.discover()
+
+    upnp.selectigd()
+
+    if upnp.addportmapping(port, 'TCP', upnp.lanaddr, port, 'putio-automator', ''):
+        app.logger.info('Mapped %d %s on %s to external port %s described as %s' % (port, 'TCP', upnp.lanaddr, port, 'putio-automator'))
+
+@app.route('/')
+def home():
+    return 'OK'
 
 if __name__ == '__main__':
     init_db()
