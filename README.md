@@ -35,11 +35,11 @@ Run the application (while in virtualenv):
 
 Where command is one of the following:
 
-*   **torrents_add**
+*   **torrents_add** [ --parent_id 0 ]
 
     Adds existing torrents to put.io.
 
-*   **torrents_watch** [ --add_first=True ]
+*   **torrents_watch** [ --add_first True ] [ --parent_id 0 ]
 
     Watches torrents folder to add to put.io. By default, adds existing torrents first.
 
