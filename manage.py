@@ -178,6 +178,13 @@ def files_download(limit=None, chunk_size=256, parent_id=0):
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
 
 @manager.command
+def forget(name):
+    with sqlite3.connect(app.config['DATABASE']) as connection:
+        c = connection.cursor()
+        c.execute('delete from downloads where name like ?', ('%%%s%%' % name,))
+        print 'Affected rows: %s' % c.rowcount
+
+@manager.command
 def upnp_add_mapping(port=None):
     if port is None:
         port = app.config['UPNP_PORT']

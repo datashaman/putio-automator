@@ -71,7 +71,11 @@ Where command is one of the following:
 
     Shows JSON of the files available for download on put.io (optionally within a specific folder on put.io).
 
-If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
+*   **forget** name
+
+    If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
+
+    A simple case-insensitive substring search is done on the downloads table in the sqlite3 database, and any records found are deleted. This will allow the files_download task to re-download a file it has downloaded before.
 
 ## Operations
 
