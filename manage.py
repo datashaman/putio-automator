@@ -5,7 +5,12 @@ import json
 import logging
 import os
 import miniupnpc
-import putio
+
+try:
+    import putiopy as putio
+except ImportError:
+    import putio
+
 import pyinotify
 import shutil
 import sqlite3
@@ -81,7 +86,7 @@ def transfers_groom():
     transfers_clean()
 
 @manager.command
-def torrents_add():
+def torrents_add(parent_id=0):
     files = os.listdir(app.config['TORRENTS'])
 
     if len(files):
@@ -98,7 +103,7 @@ def torrents_add():
                 if row is None:
                     try:
                         app.logger.debug('adding torrent: %s' % path)
-                        transfer = client.Transfer.add_torrent(path)
+                        transfer = client.Transfer.add_torrent(path, parent_id=parent_id)
                         os.unlink(path)
                         app.logger.info('added transfer: %s' % transfer)
                     except Exception, e:
@@ -116,13 +121,13 @@ def torrents_add():
                     app.logger.warning('deleted torrent, added at %s : %s' % (row[0], name))
 
 @manager.command
-def torrents_watch(add_existing=True):
+def torrents_watch(add_existing=True, parent_id=0):
     torrents_add()
 
     class EventHandler(pyinotify.ProcessEvent):
         def process_IN_CLOSE_WRITE(self, event):
             app.logger.debug('adding torrent, received event: %s' % event)
-            transfer = client.Transfer.add_torrent(event.pathname)
+            transfer = client.Transfer.add_torrent(event.pathname, parent_id=parent_id)
             os.unlink(event.pathname)
             app.logger.info('added transfer: %s' % transfer)
 
@@ -176,6 +181,13 @@ def files_download(limit=None, chunk_size=256, parent_id=0):
                             break
                 else:
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
+
+@manager.command
+def forget(name):
+    with sqlite3.connect(app.config['DATABASE']) as connection:
+        c = connection.cursor()
+        c.execute('delete from downloads where name like ?', ('%%%s%%' % name,))
+        print 'Affected rows: %s' % c.rowcount
 
 @manager.command
 def upnp_add_mapping(port=None):

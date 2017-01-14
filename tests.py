@@ -1,4 +1,8 @@
-import putio
+try:
+    import putiopy as putio
+except ImportError:
+    import putio
+
 import os
 import shutil
 import tempfile

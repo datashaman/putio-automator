@@ -17,6 +17,10 @@ Install the package requirements (while being in the virtualenv):
 
     pip install -r requirements.txt
 
+Or do both of the above in one command:
+
+    mkvirtualenv putio -r requirements.txt
+
 ## Configure
 
 Copy the distributed config file:
@@ -35,11 +39,11 @@ Run the application (while in virtualenv):
 
 Where command is one of the following:
 
-*   **torrents_add**
+*   **torrents_add** [ --parent_id 0 ]
 
     Adds existing torrents to put.io.
 
-*   **torrents_watch** [ --add_first=True ]
+*   **torrents_watch** [ --add_first True ] [ --parent_id 0 ]
 
     Watches torrents folder to add to put.io. By default, adds existing torrents first.
 
@@ -71,7 +75,11 @@ Where command is one of the following:
 
     Shows JSON of the files available for download on put.io (optionally within a specific folder on put.io).
 
-If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
+*   **forget** name
+
+    If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
+
+    A simple case-insensitive substring search is done on the downloads table in the sqlite3 database, and any records found are deleted. This will allow the files_download task to re-download a file it has downloaded before.
 
 ## Operations
 
