@@ -5,7 +5,12 @@ import json
 import logging
 import os
 import miniupnpc
-import putio
+
+try:
+    import putiopy as putio
+except ImportError:
+    import putio
+
 import pyinotify
 import shutil
 import sqlite3

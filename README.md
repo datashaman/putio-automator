@@ -17,6 +17,10 @@ Install the package requirements (while being in the virtualenv):
 
     pip install -r requirements.txt
 
+Or do both of the above in one command:
+
+    mkvirtualenv putio -r requirements.txt
+
 ## Configure
 
 Copy the distributed config file:
