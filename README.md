@@ -29,7 +29,7 @@ Copy the distributed config file:
 
 Edit the config in the file. If you do not specify a LOG_FILENAME, the application will log to the console.
 
-To get a put.io token [register your application](https://put.io/v2/oauth2/register) in put.io, and copy the *Oauth token*.
+To get a put.io token [register your application](https://put.io/oauth/apps/new) in put.io, and copy the *Oauth token* (found under the key icon).
 
 ## Run
 
