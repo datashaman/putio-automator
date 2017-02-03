@@ -3,6 +3,6 @@ Flask-Script
 Flask-Hookserver
 ipaddress
 miniupnpc
-putio.py>=2.4.1
+putio.py>=6.0.0
 pyinotify
 requests
