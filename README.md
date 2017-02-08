@@ -7,6 +7,31 @@ monitor that folder and download to the same folder used for post-processing in 
 
 To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on cron to schedule things than to fiddle with threads.
 
+## Docker
+
+Pull the latest image:
+
+    docker pull datashaman/putio-automator
+
+Run the image:
+
+	docker run --rm -it \
+		-e PUTIO_TOKEN=oauth_token \
+		-p 9001:9001 \
+		-v /local/incomplete:/files/incomplete \
+		-v /local/downloads:/files/downloads \
+		-v /local/torrents:/files/torrents \
+		datashaman/putio-automator
+
+Open http://localhost:9001 to manage processes. Drop torrent files in `/local/torrents`, and they'll be uploaded to Put.IO.
+
+Start the `downloader` service to download the torrents to `/local/downloads`.
+
+### TODO
+
+- Runtime configure immediate or scheduled downloads.
+- Fix logging (currently not visible).
+
 ## Setup
 
 Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
