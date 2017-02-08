@@ -14,7 +14,7 @@ docker-build:
 	docker build -t $(TAG) .
 
 docker-run:
-	docker run --rm -it \
+	docker run --rm -i \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
 		-p 9001:9001 \
 		-v $(HOST_INCOMPLETE):/files/incomplete \

@@ -19,8 +19,6 @@ RUN cd /app/src \
 COPY etc/supervisor /etc/supervisor/
 COPY etc/config.py /app/src/
 
-VOLUME ["/files/incomplete", "/files/downloads", "/files/torrents"]
-
 EXPOSE 9001
-
-CMD [ "supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf", "--logfile", "/dev/stdout", "--logfile_maxbytes", "0" ]
+VOLUME ["/files/incomplete", "/files/downloads", "/files/torrents"]
+ENTRYPOINT [ "supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf", "--logfile", "/dev/stdout", "--logfile_maxbytes", "0" ]
