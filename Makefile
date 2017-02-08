@@ -17,16 +17,16 @@ docker-run:
 	docker run --rm -it \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
 		-p 9001:9001 \
-		-v $(HOST_INCOMPLETE):/data/incomplete \
-		-v $(HOST_DOWNLOADS):/data/downloads \
-		-v $(HOST_TORRENTS):/data/torrents \
+		-v $(HOST_INCOMPLETE):/files/incomplete \
+		-v $(HOST_DOWNLOADS):/files/downloads \
+		-v $(HOST_TORRENTS):/files/torrents \
 		$(TAG)
 
 docker-bash:
 	docker run --rm -it \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
 		-p 9001:9001 \
-		-v $(HOST_INCOMPLETE):/data/incomplete \
-		-v $(HOST_DOWNLOADS):/data/downloads \
-		-v $(HOST_TORRENTS):/data/torrents \
+		-v $(HOST_INCOMPLETE):/files/incomplete \
+		-v $(HOST_DOWNLOADS):/files/downloads \
+		-v $(HOST_TORRENTS):/files/torrents \
 		$(TAG) /bin/bash

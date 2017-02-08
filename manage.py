@@ -27,7 +27,6 @@ logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
                     format='%(asctime)s | %(levelname)-8s | %(name)-12s | %(message)s')
 
-
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
         return obj.isoformat()
