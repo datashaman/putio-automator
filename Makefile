@@ -1,4 +1,4 @@
-TAG = putio-automator
+TAG = datashaman/putio-automator
 
 HOST_DOWNLOADS = `pwd`/tmp/downloads
 HOST_INCOMPLETE = `pwd`/tmp/incomplete
