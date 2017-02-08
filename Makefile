@@ -30,3 +30,11 @@ docker-bash:
 		-v $(HOST_DOWNLOADS):/files/downloads \
 		-v $(HOST_TORRENTS):/files/torrents \
 		$(TAG) /bin/bash
+
+docker-prune-stopped:
+	-docker rm $(docker ps -a -q)
+
+docker-prune-untagged:
+	-docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+
+docker-prune: docker-prune-stopped docker-prune-untagged
