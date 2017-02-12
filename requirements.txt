@@ -1,8 +1,6 @@
+appdirs
 Flask
 Flask-Script
-Flask-Hookserver
-ipaddress
-miniupnpc
-putio.py>=6.0.0
+putio.py
 pyinotify
-requests
+python-dotenv

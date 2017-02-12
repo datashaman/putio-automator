@@ -9,6 +9,9 @@ dotenv_path = os.path.join(BASE_DIR, '.env')
 if os.path.isfile(dotenv_path):
     load_dotenv(dotenv_path)
 
+APP_NAME = 'putio_automator'
+APP_AUTHOR = 'datashaman'
+
 DATABASE = 'application.db'
 LOG_FILENAME = None
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'WARNING')

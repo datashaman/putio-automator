@@ -1,27 +1,32 @@
 #!/usr/bin/env python
 
+import appdirs
 import datetime
 import json
 import logging
 import os
-import miniupnpc
+import pbr
+import pbr.packaging
+import subprocess
 
 try:
     import putiopy as putio
 except ImportError:
     import putio
 
+import distutils.dir_util
 import pyinotify
 import shutil
 import sqlite3
 import subprocess
 
-from app import app, init_db
+from app import create_app, init_db, APP_NAME, APP_AUTHOR
 from json import load
 from urllib2 import urlopen
 from flask import g
-from flask_hookserver import Hooks
-from flask_script import Manager
+from flask_script import Manager, prompt
+
+app = create_app()
 
 logging.basicConfig(filename=app.config.get('LOG_FILENAME'),
                     level=app.config.get('LOG_LEVEL', logging.WARNING),
@@ -43,16 +48,8 @@ def init_client(c=None):
     client = c
     return c
 
-hooks = Hooks(app, url='/hooks')
-
-@hooks.hook('push')
-def push(data, guid):
-    if app.config['DEPLOY_DEVELOP'] and data['ref'] == 'refs/heads/develop':
-        subprocess.call('git pull'.split(' '))
-        
-    return 'OK'
-
 manager = Manager(app)
+# manager.add_option('-c', '--config', dest='config', required=False)
 
 @manager.command
 def transfers_cancel_by_status(statuses):
@@ -189,25 +186,46 @@ def forget(name):
         print 'Affected rows: %s' % c.rowcount
 
 @manager.command
-def upnp_add_mapping(port=None):
-    if port is None:
-        port = app.config['UPNP_PORT']
+def supervisord():
+    subprocess.call([
+        'supervisord',
+        '-n',
+        '-c',
+        '/etc/supervisor/supervisord.conf',
+        '--logfile',
+        '/dev/stdout',
+        '--logfile_maxbytes',
+        '0'
+    ])
 
-    upnp = miniupnpc.UPnP()
+@manager.command
+def init():
+    dirs = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
 
-    upnp.discoverdelay = 10
-    upnp.discover()
+    incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
+    downloads = os.path.realpath(prompt('Downloads directory', 'downloads'))
+    torrents = os.path.realpath(prompt('Torrents directory', 'torrents'))
 
-    upnp.selectigd()
+    putio_token = prompt('OAuth Token')
 
-    if upnp.addportmapping(port, 'TCP', upnp.lanaddr, port, 'putio-automator', ''):
-        app.logger.info('Mapped %d %s on %s to external port %s described as %s' % (port, 'TCP', upnp.lanaddr, port, 'putio-automator'))
+    distutils.dir_util.mkpath(dirs.user_data_dir)
 
-@app.route('/')
-def home():
-    return 'OK'
+    config_path = os.path.realpath(prompt('Config file to write', os.path.join(dirs.user_data_dir, 'config.py')))
 
-if __name__ == '__main__':
-    init_db()
+    with open(os.path.join(app.config['BASE_DIR'], 'config.py.dist'), 'r') as source:
+        contents = (source.read()
+            .replace("os.getenv('PUTIO_TOKEN')", "os.getenv('PUTIO_TOKEN', '" + putio_token + "')")
+            .replace("/data/downloads", downloads)
+            .replace("/data/incomplete", incomplete)
+            .replace("/data/torrents", torrents))
+
+        with open(config_path, 'w') as destination:
+            destination.write(contents)
+
+def main():
+    init_db(app)
     init_client()
     manager.run()
+
+if __name__ == '__main__':
+    main()
