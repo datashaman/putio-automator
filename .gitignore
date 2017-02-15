@@ -2,6 +2,10 @@
 
 application.db
 application.log
+/AUTHORS
+/ChangeLog
 /config.py
+/.eggs/
 /.env
+/putio_automator.egg-info/
 /tmp/
