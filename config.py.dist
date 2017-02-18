@@ -3,22 +3,13 @@ import os
 
 from dotenv import load_dotenv
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-dotenv_path = os.path.join(BASE_DIR, '.env')
+dotenv_path = os.path.join(os.getcwd(), '.env')
 if os.path.isfile(dotenv_path):
     load_dotenv(dotenv_path)
 
-APP_NAME = 'putio_automator'
-APP_AUTHOR = 'datashaman'
-
-DATABASE = 'application.db'
-LOG_FILENAME = None
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'WARNING')
 PUTIO_TOKEN = os.getenv('PUTIO_TOKEN')
 
 DOWNLOADS = '/data/downloads'
 INCOMPLETE = '/data/incomplete'
 TORRENTS = '/data/torrents'
-
-UPNP_PORT = 42000
