@@ -33,9 +33,9 @@ docker-bash:
 		$(TAG) /bin/bash
 
 docker-prune-stopped:
-	-docker rm $(docker ps -a -q)
+	docker ps -a -q | xargs docker rm
 
 docker-prune-untagged:
-	-docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+	docker images | grep '^<none>' | awk '{print $$3}' | xargs docker rmi
 
 docker-prune: docker-prune-stopped docker-prune-untagged
