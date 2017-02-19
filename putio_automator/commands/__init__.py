@@ -1,3 +1,4 @@
+from config import manager as config
 from db import manager as db
 from docker import manager as docker
 from files import manager as files

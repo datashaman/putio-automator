@@ -2,6 +2,7 @@ import os
 import pyinotify
 
 from flask_script import Manager
+from putio_automator.db import with_db
 from putio_automator.manage import app
 
 
@@ -13,7 +14,7 @@ def add(parent_id=0):
     files = os.listdir(app.config['TORRENTS'])
 
     if len(files):
-        with sqlite3.connect(app.config['DATABASE']) as connection:
+        def func(connection):
             c = connection.cursor()
 
             for name in os.listdir(app.config['TORRENTS']):
@@ -42,6 +43,8 @@ def add(parent_id=0):
                 else:
                     os.unlink(path)
                     app.logger.warning('deleted torrent, added at %s : %s' % (row[0], name))
+
+        with_db(app, func)
 
 @manager.command
 def watch(add_existing=True, parent_id=0):

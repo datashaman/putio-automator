@@ -3,6 +3,7 @@ import sqlite3
 
 from flask_script import Manager
 from putio_automator import date_handler
+from putio_automator.db import with_db
 from putio_automator.manage import app
 
 
@@ -21,7 +22,7 @@ def download(limit=None, chunk_size=256, parent_id=0):
     app.logger.info('%s files found' % len(files))
 
     if len(files):
-        with sqlite3.connect(app.config['DATABASE']) as connection:
+        def func(connection):
             if limit is not None:
                 downloaded = 0
 
@@ -49,3 +50,5 @@ def download(limit=None, chunk_size=256, parent_id=0):
                             break
                 else:
                     app.logger.warning('file already downloaded at %s : %s' % (row[0], f))
+
+        with_db(app, func)

@@ -1,5 +1,6 @@
 import appdirs
 import datetime
+import distutils.dir_util
 import os
 import sqlite3
 
@@ -10,19 +11,18 @@ except ImportError:
 
 from flask import Flask
 
-APP_NAME = 'putio_automator'
+APP_NAME = 'putio-automator'
 APP_AUTHOR = 'datashaman'
+APP_TAG = '%s/%s' % (APP_AUTHOR, APP_NAME)
 
-def create_db(app):
-    with sqlite3.connect(app.config['DATABASE']) as connection:
-        c = connection.cursor()
-        c.execute('create table if not exists torrents (name character varying primary key, size integer, created_at timestamp default current_timestamp)')
-        c.execute('create table if not exists downloads (id integer primary key, name character varying, size integer, created_at timestamp default current_timestamp)')
+from db import create_db, database_path
 
 def create_app(config=None):
     app = Flask(__name__)
 
     dirs = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
+
+    distutils.dir_util.mkpath(dirs.user_data_dir)
 
     if config is None:
         search_paths = [
@@ -36,7 +36,8 @@ def create_app(config=None):
                 config = search_path
                 break
 
-    app.config.from_pyfile(config)
+    if config is not None:
+        app.config.from_pyfile(config)
 
     create_db(app)
     app.client = create_client(app)
@@ -44,9 +45,10 @@ def create_app(config=None):
     return app
 
 def create_client(app):
-    client = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
+    if 'PUTIO_TOKEN' in app.config:
+        client = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
 
-    return client
+        return client
 
 def date_handler(obj):
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):

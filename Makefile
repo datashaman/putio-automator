@@ -11,9 +11,6 @@ clean:
 restart-watcher:
 	sudo supervisorctl restart watcher
 
-docker-build:
-	docker build -t $(TAG) .
-
 docker-run:
 	docker run --rm -i \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
