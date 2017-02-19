@@ -19,10 +19,10 @@ RUN cd /app/src \
     && pip install .
 
 COPY etc/supervisor /etc/supervisor/
-COPY etc/config.py /app/src/
+COPY etc/config.py.dist /app/src/config.py
 
 RUN usermod -u 1000 www-data
 
 EXPOSE 9001
 ENTRYPOINT [ "putio" ]
-CMD [ "supervisord" ]
+CMD [ "docker", "supervisord" ]

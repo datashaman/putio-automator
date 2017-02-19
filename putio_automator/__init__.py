@@ -1,4 +1,4 @@
-import appdirs
+iimport appdirs
 import datetime
 import distutils.dir_util
 import os
