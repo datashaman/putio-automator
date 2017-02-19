@@ -1,9 +1,10 @@
 import appdirs
+import json
 import os
 import stat
 
 from flask_script import Manager, prompt
-from putio_automator import APP_NAME, APP_AUTHOR
+from putio_automator import APP_NAME, APP_AUTHOR, date_handler, find_config
 from putio_automator.manage import app
 
 manager = Manager(usage='Manage configuration')
@@ -37,3 +38,8 @@ def init():
             destination.write(contents)
 
         os.chmod(config_path, stat.S_IRUSR | stat.S_IWUSR)
+
+@manager.command
+def show():
+    print('Config filename: %s' % find_config())
+    print('Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler))

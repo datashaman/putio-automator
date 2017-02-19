@@ -16,13 +16,19 @@ def build(tag=APP_TAG):
         '.'
     ])
 
-@manager.option('-t', '--tag', dest='tag', default=APP_TAG)
-def run(tag):
+@manager.command
+def run(start=0, end=23, check_frequency=15, tag=APP_TAG):
 	subprocess.call([
 	    'docker',
 	    'run',
 	    '--rm',
 	    '-i',
+	    '-e',
+	    'START_HOUR=%s' % start,
+	    '-e',
+	    'END_HOUR=%s' % end,
+	    '-e',
+	    'CHECK_DOWNLOADS_EVERY=%s' % check_frequency,
 	    '-e',
 	    'PUTIO_TOKEN=%s' % app.config['PUTIO_TOKEN'],
 	    '-p',
