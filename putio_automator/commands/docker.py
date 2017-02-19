@@ -54,4 +54,3 @@ def supervisord():
         '--logfile_maxbytes',
         '0'
     ])
-

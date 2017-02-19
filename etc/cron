@@ -1,6 +1,7 @@
 VIRTUAL_ENV=/var/www/.virtualenvs/putio-automator
 
-50 * * * * user cd $APP && flock -n /tmp/transfers-groom.lock $VIRTUAL_ENV/bin/putio transfers groom
+50 * * * * www-data cd $APP && flock -n /tmp/transfers-groom.lock $VIRTUAL_ENV/bin/putio transfers groom
 0 $START_HOUR * * * root supervisorctl start downloader
 */$CHECK_DOWNLOADS_EVERY $START_HOUR-$END_HOUR * * * root supervisorctl start downloader
 0 $END_HOUR * * * root supervisorctl stop downloader
+

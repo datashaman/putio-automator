@@ -8,6 +8,7 @@ RUN apt-get update \
         python2.7 \
         python2.7-dev \
         python-pip \
+        rsyslog \
         supervisor \
     && rm -rf /var/lib/apt/lists/*
 
@@ -15,7 +16,7 @@ RUN mkdir -p \
         /app/logs /app/run \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
-    && touch /app/run/app.db \
+    && touch /app/run/app.db /var/log/cron.log \
     && chown -R www-data /app/logs /app/run /files /var/www
 
 COPY . /app/src/
