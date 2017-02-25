@@ -7,7 +7,7 @@
 #   cog.outl('50 * * * * root flock -n /tmp/transfers-groom.lock putio transfers groom')
 #
 #   if START_HOUR == END_HOUR:
-#       cog.outl('*/%s * * * * root flock -n /tmp/downloader.lock supervisorctl start downloader' % CHECK_DOWNLOADS_EVERY)
+#       cog.outl('*/%s * * * * root supervisorctl start downloader' % CHECK_DOWNLOADS_EVERY)
 #   else:
 #       cog.outl('*/%s %s-%s * * * root supervisorctl start downloader' % (CHECK_DOWNLOADS_EVERY, START_HOUR, (int(END_HOUR)-1) % 24))
 #       cog.outl('0 %s * * * root supervisorctl start downloader' % START_HOUR)
