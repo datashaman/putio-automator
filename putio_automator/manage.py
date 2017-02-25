@@ -15,6 +15,7 @@ manager = Manager(app, usage='Manage torrents and downloads on Put.io')
 
 import commands
 
+manager.add_command('account', commands.account)
 manager.add_command('config', commands.config)
 manager.add_command('db', commands.db)
 manager.add_command('docker', commands.docker)

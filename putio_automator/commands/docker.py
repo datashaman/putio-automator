@@ -10,6 +10,7 @@ manager = Manager(usage='Manage docker instance')
 
 @manager.command
 def pull(tag=APP_TAG):
+    "Pull latest application image"
     subprocess.call([
         'docker',
         'pull',
@@ -18,6 +19,7 @@ def pull(tag=APP_TAG):
 
 @manager.command
 def build(tag=APP_TAG):
+    "Build an application image"
     subprocess.call([
         'docker',
         'build',
@@ -28,7 +30,8 @@ def build(tag=APP_TAG):
 
 @manager.command
 def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
-	subprocess.call([
+    "Run an application container"
+    subprocess.call([
 	    'docker',
 	    'run',
 	    '--rm',
@@ -54,6 +57,7 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
 
 @manager.command
 def bootstrap():
+    "Create schedule and start supervisor"
     subprocess.call([
         'cog.py',
         '-r',
