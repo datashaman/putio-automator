@@ -30,6 +30,9 @@ docker-bash:
 		-v $(HOST_TORRENTS):/files/torrents \
 		$(TAG) /bin/bash
 
+docker-push:
+	docker push $(TAG)
+
 docker-prune-stopped:
 	docker ps -a -q | xargs -r docker rm
 

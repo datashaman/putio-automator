@@ -7,15 +7,22 @@ monitor that folder and download to the same folder used for post-processing in 
 
 ## Table of Contents
 
+
+
 <!-- toc -->
 
 * [Installation](#installation)
 * [Configuration](#configuration)
-* [Local usage](#local-usage)
-* [Docker usage](#docker-usage)
-* [Command Reference](#command-reference)
+* [Regular usage](#regular-usage)
+  * [Torrents](#torrents)
+  * [Files](#files)
+  * [Transfers](#transfers)
+  * [Database](#database)
+* [Advanced Usage](#advanced-usage)
+  * [Docker](#docker)
 
 <!-- toc stop -->
+
 
 ## Installation
 
@@ -66,14 +73,14 @@ Watch configured directory for torrents and add to **Put.IO**:
 * -a, --add_existing
   Add existing torrents first.
 * -p PARENT_ID, --parent_id PARENT_ID
-  Parent folder to download from.
+  Parent folder to add files to.
 
 Add existing torrents to **Put.IO**:
 
     putio torrents add [-p PARENT_ID]
 
 * -p PARENT_ID, --parent_id PARENT_ID
-  Parent folder to download from.
+  Parent folder to add files to.
 
 ### Files
 
@@ -82,7 +89,7 @@ List files on **Put.IO**:
     putio files list [-p PARENT_ID]
 
 * -p PARENT_ID, --parent_id PARENT_ID
-  Parent folder to download from.
+  Parent folder to list files from.
 
 Download files from **Put.IO** to configured downloads directory:
 
@@ -93,7 +100,7 @@ Download files from **Put.IO** to configured downloads directory:
 * -c CHUNK_SIZE, --chunk_size CHUNK_SIZE
   Defaults to 256kb.
 * -p PARENT_ID, --parent_id PARENT_ID
-  Parent folder to download from.
+  Parent folder to download files from.
 
 ### Transfers
 
