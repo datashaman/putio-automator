@@ -49,11 +49,9 @@ readme-generate:
 	pandoc -f markdown -t rst README.md > README.rst
 	sed -i '/.. raw:: html/,+3d' README.rst
 
-sdist: readme-generate
+prepare-upload: clean
 	python setup.py sdist
-
-bdist_wheel: readme-generate
 	python setup.py bdist_wheel
 
-upload: clean sdist bdist_wheel
+upload: prepare-upload
 	twine upload dist/*
