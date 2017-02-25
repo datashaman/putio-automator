@@ -44,8 +44,11 @@ readme-generate:
 	toc
 	pandoc -f markdown -t rst README.md > README.rst
 
-sdist: clean readme-generate
+sdist: readme-generate
 	python setup.py sdist
 
-bdist_wheel: clean readme-generate
+bdist_wheel: readme-generate
 	python setup.py bdist_wheel
+
+upload: clean sdist bdist_wheel
+	twine upload dist/*

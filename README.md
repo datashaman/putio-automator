@@ -7,8 +7,27 @@ monitor that folder and download to the same folder used for post-processing in 
 
 ## Table of Contents
 
+
+
+
+
+
+
+
+
 <!-- toc -->
+
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Local usage](#local-usage)
+* [Docker usage](#docker-usage)
+* [Command Reference](#command-reference)
+
 <!-- toc stop -->
+
+
+
+
 
 ## Installation
 
