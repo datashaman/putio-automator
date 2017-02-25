@@ -161,4 +161,4 @@ To run an application container that manages downloads for you on an optional sc
 * -t TAG, --tag TAG
   Defaults to datashaman/putio-automator.
 
-The docker container will use your configured directories to watch for torrents and download files. You can view the supervisor console at [http://localhost:9001].
+The docker container will use your configured directories to watch for torrents and download files. You can view the supervisor console at [http://localhost:9001](http://localhost:9001).
