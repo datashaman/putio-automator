@@ -9,6 +9,14 @@ manager = Manager(usage='Manage docker instance')
 
 
 @manager.command
+def pull(tag=APP_TAG):
+    subprocess.call([
+        'docker',
+        'pull',
+        tag
+    ])
+
+@manager.command
 def build(tag=APP_TAG):
     subprocess.call([
         'docker',
@@ -19,18 +27,18 @@ def build(tag=APP_TAG):
     ])
 
 @manager.command
-def run(start=0, end=23, check_frequency=15, tag=APP_TAG):
+def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
 	subprocess.call([
 	    'docker',
 	    'run',
 	    '--rm',
 	    '-i',
 	    '-e',
-	    'START_HOUR=%s' % start,
+	    'START_HOUR=%s' % start_hour,
 	    '-e',
-	    'END_HOUR=%s' % end,
+	    'END_HOUR=%s' % end_hour,
 	    '-e',
-	    'CHECK_DOWNLOADS_EVERY=%s' % check_frequency,
+	    'CHECK_DOWNLOADS_EVERY=%s' % check_downloads_every,
 	    '-e',
 	    'PUTIO_TOKEN=%s' % app.config['PUTIO_TOKEN'],
 	    '-p',
