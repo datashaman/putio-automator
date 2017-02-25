@@ -1,10 +1,11 @@
 *pyc
-
-application.db
-application.log
+/application.db
+/application.log
 /AUTHORS
+/build/
 /ChangeLog
 /config.py
+/dist/
 /.eggs/
 /.env
 /putio_automator.egg-info/

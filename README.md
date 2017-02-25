@@ -5,8 +5,6 @@ A suite of commands for managing torrents, transfers and files on put.io.
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
 
-To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on cron to schedule things than to fiddle with threads.
-
 ## Docker
 
 Pull the latest image:
@@ -38,7 +36,7 @@ Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
 
     mkvirtualenv putio
 
-Install the package requirements (while being in the virtualenv):
+Install the package:
 
     pip install -r requirements.txt
 

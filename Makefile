@@ -6,12 +6,10 @@ HOST_TORRENTS = `pwd`/tmp/torrents
 
 clean:
 	find . -name '*.pyc' -delete
+	rm -rf build dist .eggs putio_automator.egg-info sdist
 
 restart-watcher:
 	sudo supervisorctl restart watcher
-
-docker-build:
-	docker build -t $(TAG) .
 
 docker-run:
 	docker run --rm -i \
@@ -32,9 +30,9 @@ docker-bash:
 		$(TAG) /bin/bash
 
 docker-prune-stopped:
-	-docker rm $(docker ps -a -q)
+	docker ps -a -q | xargs -r docker rm
 
 docker-prune-untagged:
-	-docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+	docker images | grep '^<none>' | awk '{print $$3}' | xargs -r docker rmi
 
 docker-prune: docker-prune-stopped docker-prune-untagged
