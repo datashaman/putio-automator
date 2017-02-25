@@ -1,7 +1,13 @@
 VIRTUAL_ENV=/var/www/.virtualenvs/putio-automator
 
-50 * * * * www-data cd $APP && flock -n /tmp/transfers-groom.lock $VIRTUAL_ENV/bin/putio transfers groom
-0 $START_HOUR * * * root supervisorctl start downloader
-*/$CHECK_DOWNLOADS_EVERY $START_HOUR-$END_HOUR * * * root supervisorctl start downloader
-0 $END_HOUR * * * root supervisorctl stop downloader
+#[[[cog
+#   import cog
+#   cog.outl('50 * * * * root flock -n /tmp/transfers-groom.lock $VIRTUAL_ENV/bin/putio transfers groom')
+#   cog.outl('0 %s * * * root supervisorctl start downloader' % START_HOUR)
+#   cog.outl('*/%s %s-%s * * * root supervisorctl start downloader' % (CHECK_DOWNLOADS_EVERY, START_HOUR, END_HOUR))
+#   cog.outl('0 %s * * * root supervisorctl stop downloader' % END_HOUR)
+#]]]
+#[[[end]]]
+
+# This file *must* end with a newline.
 

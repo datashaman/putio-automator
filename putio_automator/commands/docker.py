@@ -1,4 +1,6 @@
+import os
 import subprocess
+
 from flask_script import Manager
 from putio_automator import APP_TAG
 from putio_automator.manage import app
@@ -43,7 +45,19 @@ def run(start=0, end=23, check_frequency=15, tag=APP_TAG):
     ])
 
 @manager.command
-def supervisord():
+def bootstrap():
+    subprocess.call([
+        'cog.py',
+        '-r',
+        '-D',
+        'START_HOUR=%s' % os.getenv('START_HOUR'),
+        '-D',
+        'END_HOUR=%s' % os.getenv('END_HOUR'),
+        '-D',
+        'CHECK_DOWNLOADS_EVERY=%s' % os.getenv('CHECK_DOWNLOADS_EVERY'),
+        '/etc/cron.d/putio-automator'
+    ])
+
     subprocess.call([
         'supervisord',
         '-n',

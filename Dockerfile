@@ -31,8 +31,9 @@ COPY etc/supervisor /etc/supervisor/
 COPY etc/config.py.dist /app/src/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
+RUN sed -i 's/xconsole/tty/g' /etc/rsyslog.conf
 RUN usermod -u 1000 www-data
 
 EXPOSE 9001
 ENTRYPOINT [ "putio" ]
-CMD [ "docker", "supervisord" ]
+CMD [ "docker", "bootstrap" ]
