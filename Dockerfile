@@ -8,7 +8,6 @@ RUN apt-get update \
         python2.7 \
         python2.7-dev \
         python-pip \
-        rsyslog \
         supervisor \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +30,6 @@ COPY etc/supervisor /etc/supervisor/
 COPY etc/config.py.dist /app/src/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
-RUN sed -i 's/xconsole/tty/g' /etc/rsyslog.conf
 RUN usermod -u 1000 www-data
 
 EXPOSE 9001
