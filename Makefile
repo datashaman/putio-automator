@@ -5,6 +5,7 @@ HOST_INCOMPLETE = `pwd`/tmp/incomplete
 HOST_TORRENTS = `pwd`/tmp/torrents
 
 clean:
+	python setup.py clean
 	find . -name '*.pyc' -delete
 	rm -rf build dist .eggs putio_automator.egg-info sdist
 
@@ -36,3 +37,15 @@ docker-prune-untagged:
 	docker images | grep '^<none>' | awk '{print $$3}' | xargs -r docker rmi
 
 docker-prune: docker-prune-stopped docker-prune-untagged
+
+# npm i -g marked-toc --save
+# apt install pandoc
+readme-generate:
+	toc
+	pandoc -f markdown -t rst README.md > README.rst
+
+sdist: clean readme-generate
+	python setup.py sdist
+
+bdist_wheel: clean readme-generate
+	python setup.py bdist_wheel

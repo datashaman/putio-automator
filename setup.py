@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import pypandoc
 import unittest
+
 from setuptools import setup
 
 def suite():
@@ -9,8 +11,8 @@ def suite():
     return test_suite
 
 setup(
-    setup_requires=['pbr>=1.9', 'setuptools>=17.1'],
+    pbr=True,
     test_suite='setup.suite',
     tests_require=['mock'],
-    pbr=True,
+    setup_requires=['pbr>=1.9', 'setuptools>=17.1']
 )

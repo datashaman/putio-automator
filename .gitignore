@@ -8,5 +8,6 @@
 /dist/
 /.eggs/
 /.env
-/putio_automator.egg-info/
+/*.egg-info/
+/README.rst
 /tmp/
