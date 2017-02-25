@@ -9,6 +9,23 @@ from putio_automator.manage import app
 
 manager = Manager(usage='Manage configuration')
 
+def find_config_dist():
+    file_path = os.path.join('etc', APP_NAME, 'config.py.dist')
+
+    search_paths = [
+        os.path.join(os.getcwd(), 'etc', 'config.py.dist'),
+        os.path.join(os.getenv('HOME'), '.local', 'etc', APP_NAME, 'config.py.dist'),
+        os.path.join('/etc', APP_NAME, 'config.py.dist'),
+    ]
+
+    config = None
+
+    for search_path in search_paths:
+        if os.path.exists(search_path) and not os.path.isdir(search_path):
+            config = search_path
+            break
+
+    return config
 
 @manager.command
 def init():
@@ -27,7 +44,8 @@ def init():
     if root is None:
         root = '/'
 
-    with open(os.path.join(root, 'etc', 'putio-automator', 'config.py.dist'), 'r') as source:
+    config_dist = find_config_dist()
+    with open(config_dist, 'r') as source:
         contents = (source.read()
             .replace("os.getenv('PUTIO_TOKEN')", "os.getenv('PUTIO_TOKEN', '" + putio_token + "')")
             .replace("/files/downloads", downloads)
