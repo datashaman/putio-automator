@@ -29,7 +29,10 @@ def build(tag=APP_TAG):
     ])
 
 @manager.command
-def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
+def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, log_level=None):
+    if log_level is None:
+        log_level = app.config['LOG_LEVEL']
+
     "Run an application container"
     subprocess.call([
 	    'docker',
@@ -42,6 +45,8 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
 	    'END_HOUR=%s' % end_hour,
 	    '-e',
 	    'CHECK_DOWNLOADS_EVERY=%s' % check_downloads_every,
+	    '-e',
+	    'LOG_LEVEL=%s' % log_level,
 	    '-e',
 	    'PUTIO_TOKEN=%s' % app.config['PUTIO_TOKEN'],
 	    '-p',
@@ -56,17 +61,26 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG):
     ])
 
 @manager.command
-def bootstrap():
+def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
+    if start_hour is None:
+        start_hour = os.getenv('START_HOUR', 0)
+
+    if end_hour is None:
+        end_hour = os.getenv('END_HOUR', 0)
+
+    if check_downloads_every is None:
+        check_downloads_every = os.getenv('CHECK_DOWNLOADS_EVERY', 15)
+
     "Create schedule and start supervisor"
     subprocess.call([
         'cog.py',
         '-r',
         '-D',
-        'START_HOUR=%s' % os.getenv('START_HOUR'),
+        'START_HOUR=%s' % start_hour,
         '-D',
-        'END_HOUR=%s' % os.getenv('END_HOUR'),
+        'END_HOUR=%s' % end_hour,
         '-D',
-        'CHECK_DOWNLOADS_EVERY=%s' % os.getenv('CHECK_DOWNLOADS_EVERY'),
+        'CHECK_DOWNLOADS_EVERY=%s' % check_downloads_every,
         '/etc/cron.d/putio-automator'
     ])
 
