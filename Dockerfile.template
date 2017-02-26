@@ -22,7 +22,7 @@ RUN mkdir -p \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
     && touch /app/run/app.db /var/log/cron.log \
-    && chown -R www-data /app/logs /app/run /files /var/www
+    && chown -R www-data /app/logs /app/run /files /var/www \
     && usermod -u 1000 www-data
 
 RUN pip install 'pbr>=1.9' \
