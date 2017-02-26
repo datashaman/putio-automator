@@ -7,8 +7,6 @@ monitor that folder and download to the same folder used for post-processing in 
 
 ## Table of Contents
 
-
-
 <!-- toc -->
 
 * [Installation](#installation)
@@ -22,7 +20,6 @@ monitor that folder and download to the same folder used for post-processing in 
   * [Docker](#docker)
 
 <!-- toc stop -->
-
 
 ## Installation
 
