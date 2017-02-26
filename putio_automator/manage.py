@@ -24,7 +24,7 @@ manager.add_command('torrents', commands.torrents)
 manager.add_command('transfers', commands.transfers)
 
 def main():
-    log_dir = appdirs.user_log_dir(APP_NAME, APP_AUTHOR)
+    log_dir = os.getenv('LOG_DIR', appdirs.user_log_dir(APP_NAME, APP_AUTHOR))
     distutils.dir_util.mkpath(log_dir)
 
     logfile_path = os.path.join(log_dir, 'application.log')

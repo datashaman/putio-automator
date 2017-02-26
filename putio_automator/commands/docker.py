@@ -29,9 +29,10 @@ def build(tag=APP_TAG):
     ])
 
 @manager.command
-def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, log_level=None):
-    if log_level is None:
-        log_level = app.config['LOG_LEVEL']
+@manager.option('-d', '--log-dir', dest='log_dir')
+def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=None, level=None):
+    if level is None:
+        level = app.config['LOG_LEVEL']
 
     "Run an application container"
     subprocess.call([
@@ -46,7 +47,9 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, log_le
 	    '-e',
 	    'CHECK_DOWNLOADS_EVERY=%s' % check_downloads_every,
 	    '-e',
-	    'LOG_LEVEL=%s' % log_level,
+	    'LOG_DIR=%s' % dir,
+	    '-e',
+	    'LOG_LEVEL=%s' % level,
 	    '-e',
 	    'PUTIO_TOKEN=%s' % app.config['PUTIO_TOKEN'],
 	    '-p',

@@ -9,6 +9,7 @@ RUN apt-get update \
     && mkdir -p \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
+        /var/log/putio-automator/ \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
