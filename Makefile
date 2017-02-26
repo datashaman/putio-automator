@@ -7,7 +7,7 @@ HOST_TORRENTS = `pwd`/tmp/torrents
 clean:
 	python setup.py clean
 	find . -name '*.pyc' -delete
-	rm -rf build dist .eggs putio_automator.egg-info sdist
+	rm -rf build dist .eggs putio_automator.egg-info sdist tmp/*/*
 
 restart-watcher:
 	sudo supervisorctl restart watcher
