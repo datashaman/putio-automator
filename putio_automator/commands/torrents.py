@@ -1,3 +1,6 @@
+"""
+Flask commands to manage torrents on Put.IO.
+"""
 import os
 import pyinotify
 
@@ -15,14 +18,15 @@ def add(parent_id=0):
 
     if len(files):
         def func(connection):
-            c = connection.cursor()
+            "Anoymous function"
+            conn = connection.cursor()
 
             for name in os.listdir(app.config['TORRENTS']):
                 path = os.path.join(app.config['TORRENTS'], name)
                 size = os.path.getsize(path)
 
-                c.execute("select datetime(created_at, 'localtime') from torrents where name = ? and size = ?", (name, size))
-                row = c.fetchone()
+                conn.execute("select datetime(created_at, 'localtime') from torrents where name = ? and size = ?", (name, size))
+                row = conn.fetchone()
 
                 if row is None:
                     try:
@@ -30,7 +34,7 @@ def add(parent_id=0):
                         transfer = app.client.Transfer.add_torrent(path, parent_id=parent_id)
                         os.unlink(path)
                         app.logger.info('added transfer: %s' % transfer)
-                    except Exception, e:
+                    except Exception as e:
                         if e.message == 'BadRequest':
                             # Assume it's already added
                             os.unlink(path)
@@ -38,7 +42,7 @@ def add(parent_id=0):
                         else:
                             raise e
 
-                    c.execute('insert into torrents (name, size) values (?, ?)', (name, size))
+                    conn.execute('insert into torrents (name, size) values (?, ?)', (name, size))
                     connection.commit()
                 else:
                     os.unlink(path)
@@ -47,24 +51,26 @@ def add(parent_id=0):
         with_db(app, func)
 
 @manager.command
-def watch(add_existing=True, parent_id=0):
+def watch(parent_id=0):
     "Watch a folder for new torrents to add"
     add()
 
     class EventHandler(pyinotify.ProcessEvent):
+        "Event handler for responding to a new or updated torrent file"
         def process_IN_CLOSE_WRITE(self, event):
+            "Do the above"
             app.logger.debug('adding torrent, received event: %s' % event)
             transfer = app.client.Transfer.add_torrent(event.pathname, parent_id=parent_id)
             os.unlink(event.pathname)
             app.logger.info('added transfer: %s' % transfer)
 
-    wm = pyinotify.WatchManager()
+    watch_manager = pyinotify.WatchManager()
     mask = pyinotify.IN_CLOSE_WRITE
 
     handler = EventHandler()
-    notifier = pyinotify.Notifier(wm, handler)
+    notifier = pyinotify.Notifier(watch_manager, handler)
 
-    wdd = wm.add_watch(app.config['TORRENTS'], mask, rec=True)
+    wdd = watch_manager.add_watch(app.config['TORRENTS'], mask, rec=True)
     app.logger.debug('added watch: %s' % wdd)
 
     notifier.loop()

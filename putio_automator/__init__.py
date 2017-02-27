@@ -1,4 +1,6 @@
-import appdirs
+"""
+Initialize the application.
+"""
 import datetime
 import distutils.dir_util
 import os
@@ -11,18 +13,21 @@ except ImportError:
 
 from flask import Flask
 
+import appdirs
+
 APP_NAME = 'putio-automator'
 APP_AUTHOR = 'datashaman'
 APP_TAG = '%s/%s' % (APP_AUTHOR, APP_NAME)
 
 from db import create_db, database_path
 
-dirs = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
+DIRS = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
 
 def create_app(config=None):
+    "Create a Flask app given config"
     app = Flask(__name__)
 
-    distutils.dir_util.mkpath(dirs.user_data_dir)
+    distutils.dir_util.mkpath(DIRS.user_data_dir)
 
     if config is None:
         config = find_config()
@@ -36,22 +41,25 @@ def create_app(config=None):
     return app
 
 def create_client(app):
+    "Create a Put.IO client"
     if 'PUTIO_TOKEN' in app.config:
         client = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
 
         return client
 
 def date_handler(obj):
+    "Date handler for JSON serialization"
     if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
         return obj.isoformat()
     else:
         return None
 
 def find_config():
+    "Search for config on wellknown paths"
     search_paths = [
         os.path.join(os.getcwd(), 'config.py'),
-        os.path.join(dirs.user_data_dir, 'config.py'),
-        os.path.join(dirs.site_data_dir, 'config.py'),
+        os.path.join(DIRS.user_data_dir, 'config.py'),
+        os.path.join(DIRS.site_data_dir, 'config.py'),
     ]
 
     config = None

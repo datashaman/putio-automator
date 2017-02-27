@@ -1,3 +1,6 @@
+"""
+Flask commands to build and manage a docker instance.
+"""
 import os
 import subprocess
 
@@ -5,8 +8,8 @@ from flask_script import Manager
 from putio_automator import APP_TAG
 from putio_automator.manage import app
 
-manager = Manager(usage='Manage docker instance')
 
+manager = Manager(usage='Manage docker instance')
 
 @manager.command
 def pull(tag=APP_TAG):
@@ -31,10 +34,10 @@ def build(tag=APP_TAG):
 @manager.command
 @manager.option('-d', '--log-dir', dest='log_dir')
 def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=None, level=None):
+    "Run an application container"
     if level is None:
         level = app.config['LOG_LEVEL']
 
-    "Run an application container"
     subprocess.call([
 	    'docker',
 	    'run',
@@ -65,6 +68,7 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=No
 
 @manager.command
 def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
+    "Bootstrap the application by cogging a new cron schedule and starting supervisor"
     if start_hour is None:
         start_hour = os.getenv('START_HOUR', 0)
 
@@ -74,7 +78,6 @@ def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
     if check_downloads_every is None:
         check_downloads_every = os.getenv('CHECK_DOWNLOADS_EVERY', 15)
 
-    "Create schedule and start supervisor"
     subprocess.call([
         'cog.py',
         '-r',
@@ -92,8 +95,4 @@ def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
         '-n',
         '-c',
         '/etc/supervisor/supervisord.conf',
-        '--logfile',
-        '/dev/stdout',
-        '--logfile_maxbytes',
-        '0'
     ])

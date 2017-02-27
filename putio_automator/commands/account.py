@@ -1,3 +1,7 @@
+"""
+Flask commands for managing Put.IO account
+"""
+
 import json
 
 from flask_script import Manager

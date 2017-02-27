@@ -2,9 +2,10 @@ FROM debian:jessie-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        autofs \
         cron \
         python-pip \
-        python-setuptools \
+        python-pkg-resources \
         supervisor \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p \

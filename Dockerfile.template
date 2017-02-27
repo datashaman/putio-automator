@@ -2,6 +2,7 @@ FROM resin/%%RESIN_MACHINE_NAME%%-python:slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        autofs \
         cron \
         python-pip \
         python-setuptools \

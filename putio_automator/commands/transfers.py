@@ -1,3 +1,6 @@
+"""
+Flask commands for managing transfers on Put.IO.
+"""
 import json
 
 from flask_script import Manager
@@ -39,18 +42,11 @@ def clean():
 @manager.command
 def groom():
     "Cancel seeding and completed transfers, and clean afterwards"
-    cancel_by_status([ 'SEEDING', 'COMPLETED' ])
+    cancel_by_status(['SEEDING', 'COMPLETED'])
     clean()
 
-@manager.command
-def groom():
-    "Cancel seeding and completed transfers, and clean afterwards"
-    cancel_by_status([ 'SEEDING', 'COMPLETED' ])
-    clean()
-
-@manager.command
-def list():
+def _list():
     "List transfers"
     transfers = app.client.Transfer.list()
     print json.dumps([vars(t) for t in transfers], indent=4, default=date_handler)
-
+manager.add_command('list', _list)

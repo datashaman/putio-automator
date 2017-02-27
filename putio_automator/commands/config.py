@@ -1,4 +1,7 @@
-import appdirs
+"""
+Flask commands for managing config of the application
+"""
+
 import json
 import os
 import stat
@@ -7,11 +10,13 @@ from flask_script import Manager, prompt
 from putio_automator import APP_NAME, APP_AUTHOR, date_handler, find_config
 from putio_automator.manage import app
 
+import appdirs
+
+
 manager = Manager(usage='Manage configuration')
 
 def find_config_dist():
-    file_path = os.path.join('etc', APP_NAME, 'config.py.dist')
-
+    "Search for the config.py.dist file"
     search_paths = [
         os.path.join(os.getcwd(), 'etc', 'config.py.dist'),
         os.path.join(os.getenv('HOME'), '.local', 'etc', APP_NAME, 'config.py.dist'),
@@ -29,6 +34,7 @@ def find_config_dist():
 
 @manager.command
 def init():
+    "Prompt the user for config"
     user_data_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
 
     incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
@@ -37,7 +43,9 @@ def init():
 
     putio_token = prompt('OAuth Token')
 
-    config_path = os.path.realpath(prompt('Config file to write', os.path.join(user_data_dir, 'config.py')))
+    config_path = os.path.realpath(prompt('Config file to write',
+                                          os.path.join(user_data_dir,
+                                                       'config.py')))
 
     root = os.getenv('VIRTUAL_ENV')
 
@@ -47,10 +55,11 @@ def init():
     config_dist = find_config_dist()
     with open(config_dist, 'r') as source:
         contents = (source.read()
-            .replace("os.getenv('PUTIO_TOKEN')", "os.getenv('PUTIO_TOKEN', '" + putio_token + "')")
-            .replace("/files/downloads", downloads)
-            .replace("/files/incomplete", incomplete)
-            .replace("/files/torrents", torrents))
+                    .replace("os.getenv('PUTIO_TOKEN')",
+                             "os.getenv('PUTIO_TOKEN', '" + putio_token + "')")
+                    .replace("/files/downloads", downloads)
+                    .replace("/files/incomplete", incomplete)
+                    .replace("/files/torrents", torrents))
 
         with open(config_path, 'w') as destination:
             destination.write(contents)
@@ -59,5 +68,6 @@ def init():
 
 @manager.command
 def show():
-    print('Config filename: %s' % find_config())
-    print('Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler))
+    "Show config filename and current config"
+    print 'Config filename: %s' % find_config()
+    print 'Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler)
