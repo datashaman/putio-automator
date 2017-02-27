@@ -18,7 +18,7 @@ def add(parent_id=0):
 
     if len(files):
         def func(connection):
-            "Anoymous function"
+            "Anonymous function"
             conn = connection.cursor()
 
             for name in os.listdir(app.config['TORRENTS']):

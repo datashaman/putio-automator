@@ -4,8 +4,8 @@ Flask command for managing files on Put.IO.
 import json
 import os
 import shutil
-
-from flask_script import Manager
+ 
+from flask_script import Command, Manager
 from putio_automator import date_handler
 from putio_automator.db import with_db
 from putio_automator.manage import app
@@ -13,11 +13,14 @@ from putio_automator.manage import app
 
 manager = Manager(usage='Manage files')
 
-def _list(parent_id=0):
-    "List files"
-    files = app.client.File.list(parent_id)
-    print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
-manager.add_command('list', _list)
+class List(Command):
+    "List files: Create a Flask command manually - clashes with list"
+    def run(self, parent_id=0):
+        "Run the command"
+        files = app.client.File.list(parent_id)
+        print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
+
+manager.add_command('list', List())
 
 @manager.command
 def download(limit=None, chunk_size=256, parent_id=0):
