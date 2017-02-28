@@ -17,7 +17,7 @@ RUN apt-get update \
 
 COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
-COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
+COPY etc/config.py.dist-rpi /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
 RUN pip install -U pip setuptools \
