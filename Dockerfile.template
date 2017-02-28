@@ -6,8 +6,10 @@ RUN apt-get update \
         cron \
         python-pip \
         python-setuptools \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p \
+        /etc/auto.master.d \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
         /var/log/supervisor/ \
