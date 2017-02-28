@@ -32,7 +32,7 @@ def build(tag=APP_TAG):
     ])
 
 @manager.command
-@manager.option('-d', '--log-dir', dest='log_dir')
+@manager.option('-d', '--log-dir', dest='dir')
 def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=None, level=None):
     "Run an application container"
     if level is None:
@@ -55,12 +55,18 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=No
 	    'LOG_LEVEL=%s' % level,
 	    '-e',
 	    'PUTIO_TOKEN=%s' % app.config['PUTIO_TOKEN'],
+	    '-e',
+	    'DOWNLOADS=%s' % app.config['DOWNLOADS'],
+	    '-e',
+	    'INCOMPLETE=%s' % app.config['INCOMPLETE'],
+	    '-e',
+	    'TORRENTS=%s' % app.config['TORRENTS'],
 	    '-p',
         '9001:9001',
         '-v',
-        '%s:/files/incomplete' % app.config['INCOMPLETE'],
-        '-v',
         '%s:/files/downloads' % app.config['DOWNLOADS'],
+        '-v',
+        '%s:/files/incomplete' % app.config['INCOMPLETE'],
         '-v',
         '%s:/files/torrents' % app.config['TORRENTS'],
         tag
