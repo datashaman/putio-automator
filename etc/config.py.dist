@@ -10,6 +10,6 @@ if os.path.isfile(dotenv_path):
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'WARNING')
 PUTIO_TOKEN = os.getenv('PUTIO_TOKEN')
 
-DOWNLOADS = '/files/downloads'
-INCOMPLETE = '/files/incomplete'
-TORRENTS = '/files/torrents'
+DOWNLOADS = os.getenv('DOWNLOADS', '/files/downloads')
+INCOMPLETE = os.getenv('INCOMPLETE', '/files/incomplete')
+TORRENTS = os.getenv('TORRENTS', '/files/torrents')
