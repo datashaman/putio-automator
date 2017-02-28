@@ -14,10 +14,14 @@ restart-watcher:
 
 docker-run:
 	docker run --rm -i \
+		--privileged \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
+		-e DOWNLOADS=/files/downloads \
+		-e INCOMPLETE=/files/incomplete \
+		-e TORRENTS=/files/torrents \
 		-p 9001:9001 \
-		-v $(HOST_INCOMPLETE):/files/incomplete \
 		-v $(HOST_DOWNLOADS):/files/downloads \
+		-v $(HOST_INCOMPLETE):/files/incomplete \
 		-v $(HOST_TORRENTS):/files/torrents \
 		$(TAG)
 

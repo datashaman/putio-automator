@@ -21,11 +21,13 @@ def pull(tag=APP_TAG):
     ])
 
 @manager.command
-def build(tag=APP_TAG):
+def build(tag=APP_TAG, file='Dockerfile'):
     "Build an application image"
     subprocess.call([
         'docker',
         'build',
+        '-f',
+        file,
         '-t',
         tag,
         '.'
@@ -41,6 +43,7 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=No
     subprocess.call([
 	    'docker',
 	    'run',
+	    '--privileged',
 	    '--rm',
 	    '-i',
 	    '-e',
