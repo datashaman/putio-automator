@@ -6,7 +6,6 @@ RUN apt-get update \
         cron \
         python-pip \
         python-pkg-resources \
-        supervisor \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p \
         /files/incomplete /files/downloads /files/torrents \
@@ -19,10 +18,11 @@ COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
-RUN echo "\n\n[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
-
 RUN pip install putio-automator==0.4.2.dev42 \
     && rm -rf $HOME/.cache
+
+RUN echo_supervisord_conf > /etc/supervisor/supervisord.conf
+RUN echo "\n\n[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
 
 ENV INITSYSTEM on
 

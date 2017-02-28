@@ -5,3 +5,4 @@ Flask-Script
 putio.py
 pyinotify
 python-dotenv
+supervisor
