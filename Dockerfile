@@ -18,7 +18,7 @@ COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
-RUN pip install putio-automator==0.4.2.dev42 \
+RUN pip install putio-automator==0.4.2.dev45 \
     && rm -rf $HOME/.cache
 
 RUN echo_supervisord_conf > /etc/supervisor/supervisord.conf
