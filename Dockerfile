@@ -9,16 +9,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
+        /etc/auto.master.d \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
-        /var/log/putio-automator/ \
-        /var/log/supervisor/ \
+        /var/log/putio-automator \
+        /var/log/supervisor \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
 COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
+
+RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
 
 RUN pip install putio-automator==0.4.2.dev51 \
     && rm -rf $HOME/.cache /tmp/pip_build_root

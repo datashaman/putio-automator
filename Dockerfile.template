@@ -12,8 +12,8 @@ RUN mkdir -p \
         /etc/auto.master.d \
         /files/incomplete /files/downloads /files/torrents \
         /var/www \
-        /var/log/putio-automator/ \
-        /var/log/supervisor/ \
+        /var/log/putio-automator \
+        /var/log/supervisor \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
