@@ -21,7 +21,7 @@ COPY etc/cron /etc/cron.d/putio-automator
 
 RUN echo "\n\n[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
 
-RUN pip install putio-automator==0.4.2.dev40 \
+RUN pip install putio-automator==0.4.2.dev42 \
     && rm -rf $HOME/.cache
 
 ENV INITSYSTEM on
