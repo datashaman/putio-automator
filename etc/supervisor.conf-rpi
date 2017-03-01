@@ -1,6 +1,6 @@
 [program:cron]
-command=cron -f -L 15
-environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+command=/usr/sbin/cron -f -L 15
+environment=LOG_LEVEL="%(ENV_LOG_LEVEL)s",PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
 autostart=true
 autorestart=true
 redirect_stderr=true
@@ -8,7 +8,7 @@ stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
 
 [program:rsyslog]
-command=rsyslogd -n
+command=/usr/sbin/rsyslogd -n
 autostart=true
 autorestart=true
 redirect_stderr=true
@@ -16,8 +16,8 @@ stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
 
 [program:watcher]
-command=putio torrents watch
-environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+command=/usr/local/bin/putio torrents watch
+environment=LOG_LEVEL="%(ENV_LOG_LEVEL)s",PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
 autostart=true
 autorestart=true
 redirect_stderr=true
@@ -25,8 +25,8 @@ stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
 
 [program:downloader]
-command=putio files download
-environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+command=/usr/local/bin/putio files download
+environment=LOG_LEVEL="%(ENV_LOG_LEVEL)s",PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
 autostart=false
 autorestart=unexpected
 redirect_stderr=true
@@ -34,7 +34,7 @@ stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
 
 [program:sendmail]
-command=sendmail -bD
+command=/usr/sbin/sendmail -bD
 autostart=true
 autorestart=true
 redirect_stderr=true
