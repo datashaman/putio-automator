@@ -2,7 +2,6 @@ FROM debian:jessie-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        autofs \
         cron \
         git-core \
         kmod \
@@ -32,7 +31,6 @@ COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
 RUN chmod go= /etc/cron.d/putio-automator
-RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
 
 RUN pip install -U pip setuptools \
     && pip install . \

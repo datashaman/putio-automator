@@ -2,7 +2,6 @@ FROM debian:jessie-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        autofs \
         cron \
         python-pip \
         python-pkg-resources \
@@ -24,7 +23,6 @@ COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
 RUN chmod go= /etc/cron.d/putio-automator
-RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
 
 RUN pip install putio-automator==0.4.2.dev66 \
     && rm -rf $HOME/.cache /tmp/pip_build_root

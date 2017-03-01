@@ -28,7 +28,6 @@ COPY etc/cron /etc/cron.d/putio-automator
 COPY etc/fstab /etc/fstab
 
 RUN chmod go= /etc/cron.d/putio-automator
-RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
 
 RUN pip install -U pip setuptools \
     && pip install putio-automator==0.4.2.dev66 \
