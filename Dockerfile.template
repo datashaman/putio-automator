@@ -7,7 +7,7 @@ RUN apt-get update \
         python-pip \
         python-setuptools \
         rsyslog \
-        sendmail-bin \
+        sendmail \
         smbclient \
     && rm -rf /var/lib/apt/lists/*
 

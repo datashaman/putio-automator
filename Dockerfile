@@ -5,7 +5,7 @@ RUN apt-get update \
         cron \
         python-pip \
         python-pkg-resources \
-        sendmail-bin \
+        sendmail \
         smbclient \
     && rm -rf /var/lib/apt/lists/*
 
