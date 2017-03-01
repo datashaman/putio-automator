@@ -1,0 +1,34 @@
+[program:cron]
+command=cron -f -L 15
+environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopasgroup=true
+stdout_logfile=/var/log/putio-automator/application.log
+
+[program:rsyslog]
+command=rsyslogd
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopasgroup=true
+stdout_logfile=/var/log/putio-automator/application.log
+
+[program:watcher]
+command=putio torrents watch
+environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopasgroup=true
+stdout_logfile=/var/log/putio-automator/application.log
+
+[program:downloader]
+command=putio files download
+environment=PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
+autostart=false
+autorestart=unexpected
+redirect_stderr=true
+stopasgroup=true
+stdout_logfile=/var/log/putio-automator/downloader.log
