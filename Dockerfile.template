@@ -30,8 +30,6 @@ RUN pip install -U pip setuptools \
 
 ENV INITSYSTEM on
 
-EXPOSE 9001
-
 ENTRYPOINT [ "putio" ]
 
 CMD [ "docker", "bootstrap" ]
