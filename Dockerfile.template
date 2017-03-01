@@ -19,7 +19,7 @@ RUN mkdir -p \
     && usermod -u 1000 www-data
 
 COPY etc/rsyslog.conf /etc/rsyslog.conf
-COPY etc/supervisor-rpi.conf /etc/supervisor/conf.d/putio-automator.conf
+COPY etc/supervisor.conf-rpi /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
 COPY etc/config.py.dist-rpi /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
