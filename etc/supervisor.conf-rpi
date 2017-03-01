@@ -8,7 +8,7 @@ stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
 
 [program:rsyslog]
-command=rsyslogd
+command=rsyslogd -n
 autostart=true
 autorestart=true
 redirect_stderr=true
