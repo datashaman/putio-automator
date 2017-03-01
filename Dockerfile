@@ -6,6 +6,7 @@ RUN apt-get update \
         cron \
         python-pip \
         python-pkg-resources \
+        smbclient \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
