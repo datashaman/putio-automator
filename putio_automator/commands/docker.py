@@ -76,7 +76,7 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=No
     ])
 
 @manager.command
-def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
+def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None, mount=None):
     "Bootstrap the application by cogging a new cron schedule and starting supervisor"
     if start_hour is None:
         start_hour = os.getenv('START_HOUR', 0)
@@ -86,6 +86,23 @@ def bootstrap(start_hour=None, end_hour=None, check_downloads_every=None):
 
     if check_downloads_every is None:
         check_downloads_every = os.getenv('CHECK_DOWNLOADS_EVERY', 15)
+
+    if mount is None:
+        mount = os.getenv('MOUNT')
+
+    if mount is not None:
+        subprocess.call([
+            'cog.py',
+            '-r',
+            '-D',
+            'MOUNT=%s' % mount,
+            '/etc/fstab',
+        ])
+
+        subprocess.call([
+            'mount',
+            '-a',
+        ])
 
     subprocess.call([
         'cog.py',

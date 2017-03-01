@@ -2,7 +2,7 @@ FROM resin/%%RESIN_MACHINE_NAME%%-python:slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        autofs \
+        cifs-utils \
         cron \
         python-pip \
         python-setuptools \
@@ -24,6 +24,7 @@ COPY etc/supervisor.conf-rpi /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
 COPY etc/config.py.dist-rpi /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
+COPY etc/fstab /etc/fstab
 
 RUN chmod go= /etc/cron.d/putio-automator
 RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
