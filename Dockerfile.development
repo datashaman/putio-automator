@@ -8,6 +8,7 @@ RUN apt-get update \
         kmod \
         python-pip \
         python-pkg-resources \
+        sendmail-bin \
         smbclient \
         udev \
     && rm -rf /var/lib/apt/lists/*

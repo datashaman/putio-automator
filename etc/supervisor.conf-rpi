@@ -31,4 +31,11 @@ autostart=false
 autorestart=unexpected
 redirect_stderr=true
 stopasgroup=true
-stdout_logfile=/var/log/putio-automator/downloader.log
+stdout_logfile=/var/log/putio-automator/application.log
+
+[program:sendmail]
+command=sendmail -bD
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/log/putio-automator/application.log
