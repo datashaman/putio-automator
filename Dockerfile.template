@@ -30,7 +30,7 @@ COPY etc/fstab /etc/fstab
 RUN chmod go= /etc/cron.d/putio-automator
 
 RUN pip install -U pip setuptools \
-    && pip install putio-automator==0.4.2.dev68 \
+    && pip install putio-automator==0.4.2.dev70 \
     && rm -rf $HOME/.cache /tmp/pip_build_root
 
 ENV INITSYSTEM on
