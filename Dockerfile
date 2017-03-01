@@ -22,6 +22,7 @@ COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 
+RUN chmod go= /etc/cron.d/putio-automator
 RUN echo '/cifs /etc/auto.smb' >> /etc/auto.master
 
 RUN pip install putio-automator==0.4.2.dev51 \
