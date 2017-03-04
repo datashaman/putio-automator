@@ -19,10 +19,10 @@ RUN mkdir -p \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
-COPY etc/rsyslog.conf /etc/rsyslog.conf
-COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
+COPY etc/rsyslog.conf /etc/rsyslog.conf
+COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
 
 RUN chmod go= /etc/cron.d/putio-automator
 

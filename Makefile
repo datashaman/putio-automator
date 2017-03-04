@@ -13,8 +13,10 @@ restart-watcher:
 	sudo supervisorctl restart watcher
 
 docker-run:
-	docker run --rm -i \
+	docker run --rm -it \
 		--privileged \
+		-e CHECK_DOWNLOADS_EVERY=2 \
+		-e LOG_LEVEL=DEBUG \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
 		-e DOWNLOADS=/files/downloads \
 		-e INCOMPLETE=/files/incomplete \
