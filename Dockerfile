@@ -23,14 +23,12 @@ COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 COPY etc/rsyslog.conf /etc/rsyslog.conf
 COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
+COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN chmod go= /etc/cron.d/putio-automator
 
 RUN pip install putio-automator==0.4.2.dev74 \
     && rm -rf $HOME/.cache /tmp/pip_build_root
-
-RUN echo_supervisord_conf > /etc/supervisor/supervisord.conf
-RUN echo "\n\n[inet_http_server]\nport=9001" >> /etc/supervisor/supervisord.conf
 
 ENV INITSYSTEM on
 

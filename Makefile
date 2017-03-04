@@ -21,7 +21,7 @@ docker-run:
 		-e DOWNLOADS=/files/downloads \
 		-e INCOMPLETE=/files/incomplete \
 		-e TORRENTS=/files/torrents \
-		-p 9001:9001 \
+		-p 9001:80 \
 		-v $(HOST_DOWNLOADS):/files/downloads \
 		-v $(HOST_INCOMPLETE):/files/incomplete \
 		-v $(HOST_TORRENTS):/files/torrents \
@@ -30,7 +30,7 @@ docker-run:
 docker-bash:
 	docker run --rm -it \
 		-e PUTIO_TOKEN=$(PUTIO_TOKEN)  \
-		-p 9001:9001 \
+		-p 9001:80 \
 		-v $(HOST_INCOMPLETE):/files/incomplete \
 		-v $(HOST_DOWNLOADS):/files/downloads \
 		-v $(HOST_TORRENTS):/files/torrents \
