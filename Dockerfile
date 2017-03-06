@@ -27,7 +27,7 @@ COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN chmod go= /etc/cron.d/putio-automator
 
-RUN pip install putio-automator==0.4.2.dev79 \
+RUN pip install putio-automator \
     && rm -rf $HOME/.cache /tmp/pip_build_root
 
 ENV INITSYSTEM on
