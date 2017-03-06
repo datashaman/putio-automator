@@ -65,7 +65,7 @@ def run(start_hour=0, end_hour=24, check_downloads_every=15, tag=APP_TAG, dir=No
 	    '-e',
 	    'TORRENTS=/files/torrents',
 	    '-p',
-        '9001:9001',
+        '9001:80',
         '-v',
         '%s:/files/downloads' % app.config['DOWNLOADS'],
         '-v',
