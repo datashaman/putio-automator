@@ -3,11 +3,14 @@ FROM debian:jessie-slim
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         cron \
+        git-core \
+        kmod \
         python-pip \
         python-pkg-resources \
         rsyslog \
         sendmail \
         smbclient \
+        udev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
@@ -19,6 +22,10 @@ RUN mkdir -p \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
+WORKDIR /app
+
+COPY . ./
+
 COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
 COPY etc/cron /etc/cron.d/putio-automator
 COPY etc/rsyslog.conf /etc/rsyslog.conf
@@ -27,7 +34,8 @@ COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN chmod go= /etc/cron.d/putio-automator
 
-RUN pip install putio-automator==0.4.2.dev79 \
+RUN pip install -U pip setuptools \
+    && pip install . \
     && rm -rf $HOME/.cache /tmp/pip_build_root
 
 ENV INITSYSTEM on

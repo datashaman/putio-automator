@@ -1,10 +1,11 @@
-FROM debian:jessie-slim
+FROM resin/%%RESIN_MACHINE_NAME%%-python:slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        cifs-utils \
         cron \
         python-pip \
-        python-pkg-resources \
+        python-setuptools \
         rsyslog \
         sendmail \
         smbclient \
@@ -19,20 +20,20 @@ RUN mkdir -p \
     && chown -R www-data /files /var/www \
     && usermod -u 1000 www-data
 
-COPY etc/config.py.dist /usr/local/share/putio-automator/config.py
-COPY etc/cron /etc/cron.d/putio-automator
 COPY etc/rsyslog.conf /etc/rsyslog.conf
-COPY etc/supervisor.conf /etc/supervisor/conf.d/putio-automator.conf
+COPY etc/supervisor.conf-rpi /etc/supervisor/conf.d/putio-automator.conf
 COPY etc/supervisord.conf /etc/supervisor/supervisord.conf
+COPY etc/config.py.dist-rpi /usr/local/share/putio-automator/config.py
+COPY etc/cron /etc/cron.d/putio-automator
+COPY etc/fstab /etc/fstab
 
 RUN chmod go= /etc/cron.d/putio-automator
 
-RUN pip install putio-automator==0.4.2.dev79 \
+RUN pip install -U pip setuptools \
+    && pip install putio-automator==0.4.2.dev79 \
     && rm -rf $HOME/.cache /tmp/pip_build_root
 
 ENV INITSYSTEM on
-
-EXPOSE 9001
 
 ENTRYPOINT [ "putio" ]
 

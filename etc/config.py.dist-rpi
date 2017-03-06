@@ -1,0 +1,16 @@
+import logging
+import os
+
+from dotenv import load_dotenv
+
+dotenv_path = os.path.join(os.getcwd(), '.env')
+if os.path.isfile(dotenv_path):
+    load_dotenv(dotenv_path)
+
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'WARNING')
+MAIL_TO = os.getenv('MAIL_TO')
+PUTIO_TOKEN = os.getenv('PUTIO_TOKEN')
+
+DOWNLOADS = os.getenv('DOWNLOADS')
+INCOMPLETE = os.getenv('INCOMPLETE')
+TORRENTS = os.getenv('TORRENTS')

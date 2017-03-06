@@ -1,0 +1,8 @@
+appdirs
+cogapp
+Flask
+Flask-Script
+putio.py
+pyinotify
+python-dotenv
+supervisor

@@ -1,128 +1,162 @@
 # put.io automator
 
-A suite of commands for managing torrents, transfers and files on put.io.
+A suite of commands for managing torrents, transfers and files on **Put.IO**
 
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
 
-To the people who installed the first version, apologies for the change in direction. It's a lot easier to rely on cron to schedule things than to fiddle with threads.
+## Table of Contents
 
-## Docker
+<!-- toc -->
 
-Pull the latest image:
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Regular usage](#regular-usage)
+  * [Torrents](#torrents)
+  * [Files](#files)
+  * [Transfers](#transfers)
+  * [Database](#database)
+* [Advanced Usage](#advanced-usage)
+  * [Docker](#docker)
 
-    docker pull datashaman/putio-automator
+<!-- toc stop -->
 
-Run the image:
+## Installation
 
-	docker run --rm -it \
-		-e PUTIO_TOKEN=oauth_token \
-		-p 9001:9001 \
-		-v /local/incomplete:/files/incomplete \
-		-v /local/downloads:/files/downloads \
-		-v /local/torrents:/files/torrents \
-		datashaman/putio-automator
+Install the putio-automator package locally for your user (recommended):
 
-Open http://localhost:9001 to manage processes. Drop torrent files in `/local/torrents`, and they'll be uploaded to Put.IO.
+    pip install --user putio-automator
 
-Start the `downloader` service to download the torrents to `/local/downloads`.
+This will install a new command-line utility `putio` in `$HOME/.local/bin`. Ensure it's on your path:
 
-### TODO
+    echo 'PATH=$HOME/.local/bin:$PATH' >> .profile # or .bashrc or .zshrc, ymmv
 
-- Runtime configure immediate or scheduled downloads.
-- Fix logging (currently not visible).
+Or for all users on your machine (not recommended):
 
-## Setup
+    sudo -H pip install putio-automator
 
-Create a virtualenv (recommended, assuming you're using virtualenvwrapper):
+This will install a new command-line utility `putio` in `/usr/local/bin` or similar. It should be on your path already.
 
-    mkvirtualenv putio
+## Configuration
 
-Install the package requirements (while being in the virtualenv):
+Initialize the application with a basic configuration:
 
-    pip install -r requirements.txt
+    putio config init
 
-Or do both of the above in one command:
+This will interactively prompt you with some questions about where files should be stored, and your **Put.IO** `OAuth Token`.
 
-    mkvirtualenv putio -r requirements.txt
+To get an `OAuth Token` register your application on **Put.IO**, and copy the `OAuth Token` (found under the key icon).
 
-## Configure
+**NB** The directories entered must have world-write permissions (until I figure out how to do permissions cleanly).
 
-Copy the distributed config file:
+Check that the connection is working:
 
-    cp config.py.dist config.py
+    putio account info
 
-Edit the config in the file. If you do not specify a LOG_FILENAME, the application will log to the console.
+You should see a JSON packet with information about your account. If not, check your `OAuth Token` is correct.
 
-To get a put.io token [register your application](https://put.io/oauth/apps/new) in put.io, and copy the *Oauth token* (found under the key icon).
+To help you debug config issues, show the current config:
 
-## Run
+    putio config show
 
-Run the application (while in virtualenv):
+## Regular usage
 
-    python manage.py command
+### Torrents
 
-Where command is one of the following:
+Watch configured directory for torrents and add to **Put.IO**:
 
-*   **torrents_add** [ --parent_id 0 ]
+    putio torrents watch [-a] [-p PARENT_ID]
 
-    Adds existing torrents to put.io.
+* -a, --add_existing
+  Add existing torrents first.
+* -p PARENT_ID, --parent_id PARENT_ID
+  Parent folder to add files to.
 
-*   **torrents_watch** [ --add_first True ] [ --parent_id 0 ]
+Add existing torrents to **Put.IO**:
 
-    Watches torrents folder to add to put.io. By default, adds existing torrents first.
+    putio torrents add [-p PARENT_ID]
 
-*   **transfers_cancel_completed**
+* -p PARENT_ID, --parent_id PARENT_ID
+  Parent folder to add files to.
 
-    Cancels completed transfers on put.io.
+### Files
 
-*   **transfers_cancel_seeding**
+List files on **Put.IO**:
 
-    Cancels seeding transfers on put.io.
+    putio files list [-p PARENT_ID]
 
-*   **transfers_cancel_by_status status[,status]**
+* -p PARENT_ID, --parent_id PARENT_ID
+  Parent folder to list files from.
 
-    Cancels transfers on put.io with a specific statuses (comma delimited list, no spaces).
+Download files from **Put.IO** to configured downloads directory:
 
-*   **transfers_clean**
+    putio files download [-l LIMIT] [-c CHUNK_SIZE] [-p PARENT_ID]
 
-    Cleans your transfers list on put.io.
+* -l LIMIT, --limit LIMIT
+  Maximum number of files to download in one go.
+* -c CHUNK_SIZE, --chunk_size CHUNK_SIZE
+  Defaults to 256kb.
+* -p PARENT_ID, --parent_id PARENT_ID
+  Parent folder to download files from.
 
-*   **transfers_groom**
+### Transfers
 
-    Cancels seeding and then cleans your transfers list on put.io.
+List transfers on **Put.IO**:
 
-*   **files_download** [ --limit n ] [ --chunk_size 256 ] [ --parent_id 0 ]
+    putio transfers list
 
-    Downloads files from put.io (optionally limited, or with chunk size of 256KB, or within a specific folder on put.io).
+Cancel by status:
 
-*   **files_list** [ --parent_id 0 ]
+    putio transfers cancel_by_status statuses
 
-    Shows JSON of the files available for download on put.io (optionally within a specific folder on put.io).
+* statuses
+  Comma-delimited list of statuses.
 
-*   **forget** name
+Cancel completed transfers:
 
-    If the application has encountered a file before, it logs a warning and moves on. Downloads and torrent uploads are recorded in a sqlite3 database: application.db (configurable).
+    putio transfers cancel_completed
 
-    A simple case-insensitive substring search is done on the downloads table in the sqlite3 database, and any records found are deleted. This will allow the files_download task to re-download a file it has downloaded before.
+Cancel seeding transfers:
 
-## Operations
+    putio transfers cancel_seeding
 
-The *etc* folder contains a supervisor config file for a watcher and a downloader, as well as a cron file for cron.d with a suggested schedule.
+Clean finished transfers:
 
-The cron file uses flock so the jobs don't run over eachother if they take a long time (transfer grooming should not take long, though).
+    putio transfers clean
 
-I get cheaper bandwidth at an offpeak time, so I schedule my downloads to happen between midnight and 6AM.
+Groom transfers (cancels seeding and completed transfers, and cleans afterwards):
 
-The *downloader* program in supervisor does **not** start automatically. At 5 minutes past midnight, cron starts the downloader using *supervisorctl*. Then at 5 minutes to 6AM, it stops it.
+    putio transfers groom
 
-If an exception is thrown during the download process, the supervisor program restarts. There is a retry with backoff built into the *downloader*, so you could lose connectivity to
-the server for up to 2 minutes and the download will continue.
+### Database
 
-If the *downloader* program continues to completion, the program stays stopped until the next day.
+The application records downloads in a SQLite database, so you don't inadvertently download the same file over and over when there's an error. This command clears the database record of a specific substring so you can download it again:
 
-If the *downloader* fails partway through downloading a file, it will resume from where it left off the next time it is asked to download that file.
+    putio db forget name
 
-The chunk size for HTTP traffic is set to *256KB* by default, YMMV. You can change the default in the *files_download* command.
+* name
+  A substring found in the filename.
 
-Downloaded files are only deleted from the server if they are the correct expected size and they pass CRC32 verification. A log warning is written for files that fail verification. You must manually remove the corrupted file, the command won't delete it for you.
+## Advanced Usage
+
+### Docker
+
+To pull the latest docker image:
+
+    putio docker pull
+
+To run an application container that manages downloads for you on an optional schedule:
+
+    putio docker run [-s START_HOUR] [-e END_HOUR] [-c CHECK_DOWNLOADS_EVERY] [-t TAG]
+
+* -s START_HOUR, --start_hour START_HOUR
+  The hour to start downloads. Defaults to 0.
+* -e END_HOUR, --end_hour END_HOUR
+  The hour to end downloads. Defaults to 24 (same as 0).
+* -c CHECK_DOWNLOADS_EVERY, --check_downloads_every CHECK_DOWNLOADS_EVERY.
+  Defaults to 15 (minutes).
+* -t TAG, --tag TAG
+  Defaults to datashaman/putio-automator.
+
+The docker container will use your configured directories to watch for torrents and download files. You can view the supervisor console at [http://localhost:9001](http://localhost:9001).
+

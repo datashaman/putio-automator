@@ -1,0 +1,5 @@
+#[[[cog
+#   import cog
+#   cog.outl('root: %s' % MAIL_TO)
+#]]]
+#[[[end]]]
