@@ -40,6 +40,6 @@ stdout_logfile=/var/log/putio-automator/application.log
 command=/usr/local/bin/putio torrents watch --mount
 environment=LOG_LEVEL="%(ENV_LOG_LEVEL)s",PUTIO_TOKEN="%(ENV_PUTIO_TOKEN)s",DOWNLOADS="%(ENV_DOWNLOADS)s",INCOMPLETE="%(ENV_INCOMPLETE)s",TORRENTS="%(ENV_TORRENTS)s"
 autostart=true
-autorestart=true
+autorestart=false
 stopasgroup=true
 stdout_logfile=/var/log/putio-automator/application.log
