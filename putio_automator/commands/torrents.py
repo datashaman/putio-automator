@@ -3,6 +3,7 @@ Flask commands to manage torrents on Put.IO.
 """
 import os
 import pyinotify
+import subprocess
 
 from flask_script import Manager
 from putio_automator.db import with_db
@@ -51,8 +52,15 @@ def add(parent_id=0):
         with_db(app, func)
 
 @manager.command
-def watch(parent_id=0):
+def watch(parent_id=0, mount=False):
     "Watch a folder for new torrents to add"
+
+    if mount and not os.path.exists(app.config['TORRENTS']):
+        subprocess.call([
+            'mount',
+            '-a'
+        ])
+
     add()
 
     class EventHandler(pyinotify.ProcessEvent):
