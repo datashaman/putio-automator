@@ -19,7 +19,7 @@ def find_config_dist():
     "Search for the config.py.dist file"
     search_paths = [
         os.path.join(os.getcwd(), 'etc', 'config.py.dist'),
-        os.path.join(os.getenv('HOME'), '.local', 'etc', APP_NAME, 'config.py.dist'),
+        os.path.join(os.getenv('HOME'), '.local', 'share', APP_NAME, 'config.py.dist'),
         os.path.join('/etc', APP_NAME, 'config.py.dist'),
     ]
 
