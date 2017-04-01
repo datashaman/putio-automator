@@ -36,21 +36,13 @@ def find_config_dist():
 def init():
     "Prompt the user for config"
     user_data_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
+    config_path = os.path.join(user_data_dir, 'config.py')
 
     incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
     downloads = os.path.realpath(prompt('Downloads directory', 'downloads'))
     torrents = os.path.realpath(prompt('Torrents directory', 'torrents'))
 
     putio_token = prompt('OAuth Token')
-
-    config_path = os.path.realpath(prompt('Config file to write',
-                                          os.path.join(user_data_dir,
-                                                       'config.py')))
-
-    root = os.getenv('VIRTUAL_ENV')
-
-    if root is None:
-        root = '/'
 
     config_dist = find_config_dist()
     with open(config_dist, 'r') as source:
@@ -65,6 +57,9 @@ def init():
             destination.write(contents)
 
         os.chmod(config_path, stat.S_IRUSR | stat.S_IWUSR)
+
+        print '\nConfig written to %s' % config_path
+
 
 @manager.command
 def show():
