@@ -41,6 +41,9 @@ def init(user=False):
     else:
         base_dir = appdirs.site_data_dir(APP_NAME, APP_AUTHOR)
 
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+
     config_path = os.path.join(base_dir, 'config.py')
 
     incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
