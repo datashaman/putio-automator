@@ -33,13 +33,13 @@ def find_config_dist():
     return config
 
 @manager.command
-def init(user=False):
+def init(site=False):
     "Prompt the user for config"
 
-    if user:
-        base_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
-    else:
+    if site:
         base_dir = appdirs.site_data_dir(APP_NAME, APP_AUTHOR)
+    else:
+        base_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
 
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
