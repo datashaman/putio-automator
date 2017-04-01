@@ -39,9 +39,13 @@ This will install a new command-line utility `putio` in `/usr/local/bin` or simi
 
 ## Configuration
 
-Initialize the application with a basic configuration:
+Initialize the application with a basic configuration locally for your user (recommended):
 
     putio config init
+
+Or for all users on your machine (not recommended):
+
+    putio config init --site
 
 This will interactively prompt you with some questions about where files should be stored, and your **Put.IO** `OAuth Token`.
 
