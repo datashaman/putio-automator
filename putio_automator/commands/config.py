@@ -33,10 +33,15 @@ def find_config_dist():
     return config
 
 @manager.command
-def init():
+def init(user=False):
     "Prompt the user for config"
-    user_data_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
-    config_path = os.path.join(user_data_dir, 'config.py')
+
+    if user:
+        base_dir = appdirs.user_data_dir(APP_NAME, APP_AUTHOR)
+    else:
+        base_dir = appdirs.site_data_dir(APP_NAME, APP_AUTHOR)
+
+    config_path = os.path.join(base_dir, 'config.py')
 
     incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
     downloads = os.path.realpath(prompt('Downloads directory', 'downloads'))

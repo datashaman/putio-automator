@@ -39,7 +39,11 @@ This will install a new command-line utility `putio` in `/usr/local/bin` or simi
 
 ## Configuration
 
-Initialize the application with a basic configuration:
+Initialize the application with a basic configuration locally for your user (recommended):
+
+    putio config init --user
+
+Or for all users on your machine (not recommended):
 
     putio config init
 
