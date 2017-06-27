@@ -23,10 +23,11 @@ class List(Command):
 manager.add_command('list', List())
 
 @manager.command
-def download(limit=None, chunk_size=256, parent_id=0):
+def download(limit=None, chunk_size=256, parent_id=0, folder=""):
     "Download files"
     files = app.client.File.list(parent_id)
     app.logger.info('%s files found' % len(files))
+    folder = "/" + folder
 
     if len(files):
         def func(connection):
@@ -46,7 +47,7 @@ def download(limit=None, chunk_size=256, parent_id=0):
                     app.logger.info('downloaded file: %s' % current_file)
 
                     path = os.path.join(app.config['INCOMPLETE'], current_file.name)
-                    shutil.move(path, app.config['DOWNLOADS'])
+                    shutil.move(path, app.config['DOWNLOADS'] + folder)
 
                     conn.execute('insert into downloads (id, name, size) values (?, ?, ?)', (current_file.id, current_file.name, current_file.size))
                     connection.commit()

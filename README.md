@@ -102,6 +102,8 @@ Download files from **Put.IO** to configured downloads directory:
   Defaults to 256kb.
 * -p PARENT_ID, --parent_id PARENT_ID
   Parent folder to download files from.
+* -f FOLDER, --folder FOLDER
+  Folder in the downloads directory download to.
 
 ### Transfers
 
