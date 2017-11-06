@@ -19,16 +19,20 @@ class List(Command):
         Option('--parent_id', '-p', dest='parent_id'),
     )
 
-    def run(self, parent_id=0):
+    def run(self, parent_id=None):
         "Run the command"
+        if parent_id == None:
+            parent_id = app.config.get('PUTIO_ROOT', 0)
         files = app.client.File.list(parent_id)
         print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
 
 manager.add_command('list', List())
 
 @manager.command
-def download(limit=None, chunk_size=256, parent_id=0, folder=""):
+def download(limit=None, chunk_size=256, parent_id=None, folder=""):
     "Download files"
+    if parent_id == None:
+        parent_id = app.config.get('PUTIO_ROOT', 0)
     files = app.client.File.list(parent_id)
     app.logger.info('%s files found' % len(files))
 
