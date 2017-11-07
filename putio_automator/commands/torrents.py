@@ -32,7 +32,12 @@ def add(parent_id=0):
                 if row is None:
                     try:
                         app.logger.debug('adding torrent: %s' % path)
-                        transfer = app.client.Transfer.add_torrent(path, parent_id=parent_id)
+                        _, ext = os.path.splitext(path)
+                        if ext == '.magnet':
+                            with open(path) as f: magnet_uri = f.read()
+                            transfer = app.client.Transfer.add_url(magnet_uri, parent_id=parent_id)
+                        else:
+                            transfer = app.client.Transfer.add_torrent(path, parent_id=parent_id)
                         os.unlink(path)
                         app.logger.info('added transfer: %s' % transfer)
                     except Exception as e:
