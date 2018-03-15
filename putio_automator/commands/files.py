@@ -5,7 +5,7 @@ import json
 import os
 import shutil
  
-from flask_script import Command, Manager, Option
+from flask_script import Command, Manager
 from putio_automator import date_handler
 from putio_automator.db import with_db
 from putio_automator.manage import app
@@ -15,10 +15,6 @@ manager = Manager(usage='Manage files')
 
 class List(Command):
     "List files: Create a Flask command manually - clashes with list"
-    option_list = (
-        Option('--parent_id', '-p', dest='parent_id'),
-    )
-
     def run(self, parent_id=0):
         "Run the command"
         files = app.client.File.list(parent_id)
