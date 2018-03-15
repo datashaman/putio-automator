@@ -31,6 +31,7 @@ RUN pip install putio-automator \
     && rm -rf $HOME/.cache /tmp/pip_build_root
 
 ENV INITSYSTEM on
+ENV PUTIO_ROOT 0
 
 EXPOSE 9001
 

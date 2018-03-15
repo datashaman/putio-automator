@@ -13,8 +13,10 @@ from putio_automator.manage import app
 manager = Manager(usage='Manage torrents')
 
 @manager.command
-def add(parent_id=0):
+def add(parent_id=None):
     "Add a torrent"
+    if parent_id == None:
+        parent_id = app.config.get('PUTIO_ROOT', 0)
     files = os.listdir(app.config['TORRENTS'])
 
     if len(files):
@@ -52,9 +54,11 @@ def add(parent_id=0):
         with_db(app, func)
 
 @manager.command
-def watch(parent_id=0, mount=False):
+def watch(parent_id=None, mount=False):
     "Watch a folder for new torrents to add"
 
+    if parent_id == None:
+        parent_id = app.config.get('PUTIO_ROOT', 0)
     if mount and not os.path.exists(app.config['TORRENTS']):
         subprocess.call([
             'mount',

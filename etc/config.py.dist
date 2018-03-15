@@ -14,3 +14,5 @@ PUTIO_TOKEN = os.getenv('PUTIO_TOKEN')
 DOWNLOADS = '/files/downloads'
 INCOMPLETE = '/files/incomplete'
 TORRENTS = '/files/torrents'
+
+PUTIO_ROOT = os.getenv('PUTIO_ROOT', 0)
