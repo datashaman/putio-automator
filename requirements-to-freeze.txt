@@ -5,4 +5,5 @@ Flask-Script
 putio.py
 pyinotify
 python-dotenv
+requests>=2.20.0
 supervisor

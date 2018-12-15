@@ -14,7 +14,6 @@ from putio_automator.manage import app
 manager = Manager(usage='Manage files')
 
 class List(Command):
-    "List files: Create a Flask command manually - clashes with list"
     option_list = (
         Option('--parent_id', '-p', dest='parent_id'),
     )
