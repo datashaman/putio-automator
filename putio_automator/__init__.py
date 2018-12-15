@@ -54,7 +54,7 @@ def date_handler(obj):
     else:
         return None
 
-def find_config():
+def find_config(verbose=False):
     "Search for config on wellknown paths"
     search_paths = [
         os.path.join(os.getcwd(), 'config.py'),
@@ -65,6 +65,9 @@ def find_config():
     config = None
 
     for search_path in search_paths:
+        if verbose:
+            print("Searching %s" % search_path)
+
         if os.path.exists(search_path) and not os.path.isdir(search_path):
             config = search_path
             break

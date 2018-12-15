@@ -72,5 +72,6 @@ def init(site=False):
 @manager.command
 def show():
     "Show config filename and current config"
-    print 'Config filename: %s' % find_config()
+    config_file = find_config(verbose=True)
+    print 'Config filename: %s' % config_file
     print 'Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler)
