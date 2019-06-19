@@ -17,15 +17,16 @@ def add(parent_id=None):
     "Add a torrent"
     if parent_id == None:
         parent_id = app.config.get('PUTIO_ROOT', 0)
-    files = os.listdir(app.config['TORRENTS'])
+    folder = app.config['TORRENTS']
+    files = list(f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f)))
 
     if len(files):
         def func(connection):
             "Anonymous function"
             conn = connection.cursor()
 
-            for name in os.listdir(app.config['TORRENTS']):
-                path = os.path.join(app.config['TORRENTS'], name)
+            for name in files:
+                path = os.path.join(folder, name)
                 size = os.path.getsize(path)
 
                 conn.execute("select datetime(created_at, 'localtime') from torrents where name = ? and size = ?", (name, size))
