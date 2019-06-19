@@ -3,11 +3,11 @@ certifi==2018.11.29
 chardet==3.0.4
 click==6.7
 cogapp==2.5.1
-Flask==0.12
+Flask==1.0.3
 Flask-Script==2.0.5
 idna==2.8
 itsdangerous==0.24
-Jinja2==2.9.5
+Jinja2==2.10.1
 MarkupSafe==0.23
 meld3==1.0.2
 packaging==16.8
@@ -19,5 +19,5 @@ requests==2.21.0
 six==1.10.0
 supervisor==3.3.1
 tus.py==1.2.0
-urllib3==1.24.1
-Werkzeug==0.11.15
+urllib3==1.25.3
+Werkzeug==0.15.4
