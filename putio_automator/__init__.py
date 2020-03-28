@@ -19,7 +19,7 @@ APP_NAME = 'putio-automator'
 APP_AUTHOR = 'datashaman'
 APP_TAG = '%s/%s' % (APP_AUTHOR, APP_NAME)
 
-from db import create_db, database_path
+from .db import create_db, database_path
 
 DIRS = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
 

@@ -16,6 +16,6 @@ def forget(name):
         "Do the above"
         conn = connection.cursor()
         conn.execute('delete from downloads where name like ?', ('%%%s%%' % name,))
-        print 'Affected rows: %s' % conn.rowcount
+        print('Affected rows: %s' % conn.rowcount)
 
     with_db(app, func)

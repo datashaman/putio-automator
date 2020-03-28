@@ -18,12 +18,11 @@ app = create_app()
 manager = Manager(app, usage='Manage torrents and downloads on Put.io')
 
 # This must be here (circular references)
-import commands
+from . import commands
 
 manager.add_command('account', commands.account)
 manager.add_command('config', commands.config)
 manager.add_command('db', commands.db)
-manager.add_command('docker', commands.docker)
 manager.add_command('files', commands.files)
 manager.add_command('torrents', commands.torrents)
 manager.add_command('transfers', commands.transfers)

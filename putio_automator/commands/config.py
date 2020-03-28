@@ -66,12 +66,12 @@ def init(site=False):
 
         os.chmod(config_path, stat.S_IRUSR | stat.S_IWUSR)
 
-        print '\nConfig written to %s' % config_path
+        print('\nConfig written to %s' % config_path)
 
 
 @manager.command
 def show():
     "Show config filename and current config"
     config_file = find_config(verbose=True)
-    print 'Config filename: %s' % config_file
-    print 'Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler)
+    print('Config filename: %s' % config_file)
+    print('Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler))

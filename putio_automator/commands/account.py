@@ -14,4 +14,4 @@ manager = Manager(usage='Manage account')
 @manager.command
 def info():
     "Show account info"
-    print json.dumps(app.client.Account.info(), indent=4, default=date_handler)
+    print(json.dumps(app.client.Account.info(), indent=4, default=date_handler))

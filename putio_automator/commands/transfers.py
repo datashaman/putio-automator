@@ -50,5 +50,5 @@ class List(Command):
     def run(self):
         "List transfers"
         transfers = app.client.Transfer.list()
-        print json.dumps([vars(t) for t in transfers], indent=4, default=date_handler)
+        print(json.dumps([vars(t) for t in transfers], indent=4, default=date_handler))
 manager.add_command('list', List())

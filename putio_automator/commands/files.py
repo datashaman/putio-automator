@@ -23,7 +23,7 @@ class List(Command):
         if parent_id == None:
             parent_id = app.config.get('PUTIO_ROOT', 0)
         files = app.client.File.list(parent_id)
-        print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
+        print(json.dumps([vars(f) for f in files], indent=4, default=date_handler))
 
 manager.add_command('list', List())
 
