@@ -48,9 +48,9 @@ def download(limit=None, chunk_size=256, parent_id=None, folder=""):
                 row = conn.fetchone()
 
                 if row is None:
-                    app.logger.debug('downloading file: %s' % current_file)
+                    app.logger.debug('downloading file: %s' % current_file.name)
                     current_file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
-                    app.logger.info('downloaded file: %s' % current_file)
+                    app.logger.info('downloaded file: %s' % current_file.name)
 
                     src = os.path.join(app.config['INCOMPLETE'], current_file.name)
                     dest = os.path.join(app.config['DOWNLOADS'], folder)
@@ -65,6 +65,6 @@ def download(limit=None, chunk_size=256, parent_id=None, folder=""):
                         if downloaded > limit:
                             break
                 else:
-                    app.logger.warning('file already downloaded at %s : %s' % (row[0], current_file))
+                    app.logger.warning('file already downloaded at %s : %s' % (row[0], current_file.name))
 
         with_db(app, func)
