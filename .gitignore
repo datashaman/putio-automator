@@ -9,5 +9,4 @@
 /.eggs/
 /.env
 /*.egg-info/
-/README.rst
 /tmp/

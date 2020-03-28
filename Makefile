@@ -10,7 +10,7 @@ clean:
 	rm -rf build dist .eggs putio_automator.egg-info sdist tmp/*/*
 
 readme-generate:
-	toc
+	# toc
 	cat -s README.md > /tmp/readme && mv /tmp/readme README.md
 	pandoc -f markdown -t rst README.md > README.rst
 	sed -i '/.. raw:: html/,+3d' README.rst
