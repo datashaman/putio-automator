@@ -1,24 +1,32 @@
 """
 Flask commands to manage torrents on Put.IO.
 """
+import logging
+logger = logging.getLogger(__name__)
+
+import click
 import os
-import pyinotify
+import putiopy
 import subprocess
 
-from flask_script import Manager
+from fswatch import Monitor
+from putio_automator.cli import cli
 from putio_automator.db import with_db
-from putio_automator.manage import app
 
 
-manager = Manager(usage='Manage torrents')
+@cli.group()
+def torrents():
+    pass
 
-@manager.command
-def add(parent_id=None):
+@torrents.command()
+@click.pass_context
+def add(ctx, parent_id=None):
     "Add a torrent"
     if parent_id == None:
-        parent_id = app.config.get('PUTIO_ROOT', 0)
-    folder = app.config['TORRENTS']
-    files = list(f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f)))
+        parent_id = ctx.obj['ROOT']
+    folder = ctx.obj['TORRENTS']
+    files = os.listdir(folder)
+    files = list(f for f in files if os.path.isfile(os.path.join(folder, f)))
 
     if len(files):
         def func(connection):
@@ -34,56 +42,53 @@ def add(parent_id=None):
 
                 if row is None:
                     try:
-                        app.logger.debug('adding torrent: %s' % path)
-                        transfer = app.client.Transfer.add_torrent(path, parent_id=parent_id)
+                        logger.debug('adding torrent: %s' % path)
+                        transfer = ctx.obj['CLIENT'].Transfer.add_torrent(path, parent_id=parent_id)
                         os.unlink(path)
-                        app.logger.info('added transfer: %s' % transfer)
-                    except Exception as e:
-                        if e.message == 'BadRequest':
+                        logger.info('added transfer: %s - %s' % (transfer.id, name))
+                    except:
+                        info = sys.exc_info()
+
+                        if info[0] == putiopy.ClientError and info[1].type == 'UnknownError':
                             # Assume it's already added
                             os.unlink(path)
-                            app.logger.warning('deleted torrent, already added : %s' % (name,))
+                            logger.warning('deleted torrent, already added : %s' % (name,))
                         else:
-                            raise e
+                            raise
 
                     conn.execute('insert into torrents (name, size) values (?, ?)', (name, size))
                     connection.commit()
                 else:
                     os.unlink(path)
-                    app.logger.warning('deleted torrent, added at %s : %s' % (row[0], name))
+                    logger.warning('deleted torrent, added at %s : %s' % (row[0], name))
 
-        with_db(app, func)
+        with_db(func)
 
-@manager.command
-def watch(parent_id=None, mount=False):
+@torrents.command()
+@click.pass_context
+def watch(ctx, parent_id=None, mount=False):
     "Watch a folder for new torrents to add"
 
-    if parent_id == None:
-        parent_id = app.config.get('PUTIO_ROOT', 0)
-    if mount and not os.path.exists(app.config['TORRENTS']):
+    if parent_id is None:
+        parent_id = ctx.obj['ROOT']
+
+    if mount and not os.path.exists(ctx.obj['TORRENTS']):
         subprocess.call([
             'mount',
             '-a'
         ])
 
-    add()
+    ctx.invoke(add, parent_id=parent_id)
 
-    class EventHandler(pyinotify.ProcessEvent):
-        "Event handler for responding to a new or updated torrent file"
-        def process_IN_CLOSE_WRITE(self, event):
-            "Do the above"
-            app.logger.debug('adding torrent, received event: %s' % event)
-            transfer = app.client.Transfer.add_torrent(event.pathname, parent_id=parent_id)
-            os.unlink(event.pathname)
-            app.logger.info('added transfer: %s' % transfer)
+    monitor = Monitor()
+    monitor.add_path(ctx.obj['TORRENTS'])
 
-    watch_manager = pyinotify.WatchManager()
-    mask = pyinotify.IN_CLOSE_WRITE
+    def callback(path, evt_time, flags, flags_num, event_num):
+        torrent_path = path.decode()
+        logger.debug('adding torrent, received event for: %s' % torrent_path)
+        transfer = ctx.obj['CLIENT'].Transfer.add_torrent(path.decode(), parent_id=parent_id)
+        os.unlink(torrent_path)
+        logger.info('added transfer: %s' % transfer)
 
-    handler = EventHandler()
-    notifier = pyinotify.Notifier(watch_manager, handler)
-
-    wdd = watch_manager.add_watch(app.config['TORRENTS'], mask, rec=True)
-    app.logger.debug('added watch: %s' % wdd)
-
-    notifier.loop()
+    monitor.set_callback(callback)
+    monitor.start()
