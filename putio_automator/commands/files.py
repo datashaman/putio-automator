@@ -28,7 +28,7 @@ class List(Command):
 manager.add_command('list', List())
 
 @manager.command
-def download(limit=None, chunk_size=256, parent_id=None, folder=""):
+def download(limit=None, chunk_size=256, parent_id=None, folder="", ignore_existing=False):
     "Download files"
     if parent_id == None:
         parent_id = app.config.get('PUTIO_ROOT', 0)
@@ -47,7 +47,7 @@ def download(limit=None, chunk_size=256, parent_id=None, folder=""):
                 conn.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (current_file.name, current_file.size))
                 row = conn.fetchone()
 
-                if row is None:
+                if row is None or ignore_existing:
                     app.logger.debug('downloading file: %s' % current_file.name)
                     current_file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
                     app.logger.info('downloaded file: %s' % current_file.name)
