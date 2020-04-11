@@ -1,23 +1,17 @@
 """
 Initialize the application.
 """
+import appdirs
 import datetime
 import distutils.dir_util
 import os
+import putiopy
 import sqlite3
-
-try:
-    import putiopy as putio
-except ImportError:
-    import putio
 
 from flask import Flask
 
-import appdirs
-
 APP_NAME = 'putio-automator'
 APP_AUTHOR = 'datashaman'
-APP_TAG = '%s/%s' % (APP_AUTHOR, APP_NAME)
 
 from .db import create_db, database_path
 
@@ -43,7 +37,7 @@ def create_app(config=None):
 def create_client(app):
     "Create a Put.IO client"
     if 'PUTIO_TOKEN' in app.config:
-        client = putio.Client(app.config['PUTIO_TOKEN'], use_retry=True)
+        client = putiopy.Client(app.config['PUTIO_TOKEN'], use_retry=True)
 
         return client
 

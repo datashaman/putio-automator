@@ -2,6 +2,7 @@
 Flask commands to manage torrents on Put.IO.
 """
 import os
+import putiopy
 import pyinotify
 import subprocess
 
@@ -37,8 +38,8 @@ def add(parent_id=None):
                         app.logger.debug('adding torrent: %s' % path)
                         transfer = app.client.Transfer.add_torrent(path, parent_id=parent_id)
                         os.unlink(path)
-                        app.logger.info('added transfer: %s' % transfer)
-                    except Exception as e:
+                        app.logger.info('added transfer: %s - %s' % (transfer.id, name))
+                    except putiopy.ClientError as e:
                         if e.message == 'BadRequest':
                             # Assume it's already added
                             os.unlink(path)

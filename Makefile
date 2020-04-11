@@ -1,5 +1,3 @@
-TAG = datashaman/putio-automator
-
 HOST_DOWNLOADS = `pwd`/tmp/downloads
 HOST_INCOMPLETE = `pwd`/tmp/incomplete
 HOST_TORRENTS = `pwd`/tmp/torrents
