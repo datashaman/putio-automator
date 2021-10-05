@@ -2,18 +2,15 @@
 Flask commands for managing config of the application
 """
 
+import appdirs
+import click
 import json
 import os
 import stat
 
-from flask_script import Manager, prompt
-from putio_automator import APP_NAME, APP_AUTHOR, date_handler, find_config
-from putio_automator.manage import app
+from putio_automator import APP_NAME, APP_AUTHOR, date_handler, echo, find_config, logger
+from putio_automator.cli import cli
 
-import appdirs
-
-
-manager = Manager(usage='Manage configuration')
 
 def find_config_dist():
     "Search for the config.py.dist file"
@@ -32,7 +29,11 @@ def find_config_dist():
 
     return config
 
-@manager.command
+@cli.group()
+def config():
+    pass
+
+@config.command()
 def init(site=False):
     "Prompt the user for config"
 
@@ -46,11 +47,11 @@ def init(site=False):
 
     config_path = os.path.join(base_dir, 'config.py')
 
-    incomplete = os.path.realpath(prompt('Incomplete directory', 'incomplete'))
-    downloads = os.path.realpath(prompt('Downloads directory', 'downloads'))
-    torrents = os.path.realpath(prompt('Torrents directory', 'torrents'))
+    incomplete = os.path.realpath(click.prompt('Incomplete directory', 'incomplete'))
+    downloads = os.path.realpath(click.prompt('Downloads directory', 'downloads'))
+    torrents = os.path.realpath(click.prompt('Torrents directory', 'torrents'))
 
-    putio_token = prompt('OAuth Token')
+    putio_token = click.prompt('OAuth Token')
 
     config_dist = find_config_dist()
     with open(config_dist, 'r') as source:
@@ -66,12 +67,16 @@ def init(site=False):
 
         os.chmod(config_path, stat.S_IRUSR | stat.S_IWUSR)
 
-        print '\nConfig written to %s' % config_path
+    echo('info', 'Config written to %s' % config_path)
 
-
-@manager.command
+@config.command()
 def show():
     "Show config filename and current config"
     config_file = find_config(verbose=True)
-    print 'Config filename: %s' % config_file
-    print 'Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler)
+
+    if config_file:
+        echo('info', 'Found config file at %s' % config_file)
+    else:
+        echo('error', 'Config file not found')
+
+    # logger.info('Current config:\n%s' % json.dumps(app.config, indent=4, default=date_handler))

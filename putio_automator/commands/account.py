@@ -2,16 +2,31 @@
 Flask commands for managing Put.IO account
 """
 
-import json
+import click
+import yaml
+import putiopy
+import sys
 
-from flask_script import Manager
-from putio_automator import date_handler
-from putio_automator.manage import app
-
-manager = Manager(usage='Manage account')
+from putio_automator import date_handler, echo, logger
+from putio_automator.cli import cli
 
 
-@manager.command
-def info():
+@cli.group()
+def account():
+    pass
+
+@account.command()
+@click.pass_context
+def info(ctx):
     "Show account info"
-    print json.dumps(app.client.Account.info(), indent=4, default=date_handler)
+    try:
+        response = ctx.obj['CLIENT'].Account.info()
+    except putiopy.ClientError as exc:
+        echo('error', exc.message)
+        ctx.exit(1)
+
+    if response['status'] == 'OK':
+        echo('info', yaml.dump(response['info']))
+    else:
+        echo('error', yaml.dump(response))
+        ctx.exit(1)

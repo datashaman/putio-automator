@@ -1,6 +1,4 @@
 *pyc
-/application.db
-/application.log
 /AUTHORS
 /build/
 /ChangeLog
@@ -9,5 +7,5 @@
 /.eggs/
 /.env
 /*.egg-info/
-/README.rst
+/putio.log
 /tmp/

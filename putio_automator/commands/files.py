@@ -1,39 +1,39 @@
 """
 Flask command for managing files on Put.IO.
 """
+import click
 import json
 import os
 import shutil
+import yaml
  
-from flask_script import Command, Manager, Option
-from putio_automator import date_handler
+from putio_automator import date_handler, echo, logger
+from putio_automator.cli import cli
 from putio_automator.db import with_db
-from putio_automator.manage import app
 
 
-manager = Manager(usage='Manage files')
+@cli.group()
+def files():
+    pass
 
-class List(Command):
-    option_list = (
-        Option('--parent_id', '-p', dest='parent_id'),
-    )
+@files.command()
+@click.pass_context
+def list(ctx, parent_id=None):
+    "List files"
+    if parent_id == None:
+        parent_id = ctx.obj['ROOT']
+    files = ctx.obj['CLIENT'].File.list(parent_id)
+    click.echo(yaml.dump([vars(f) for f in files]))
 
-    def run(self, parent_id=None):
-        "Run the command"
-        if parent_id == None:
-            parent_id = app.config.get('PUTIO_ROOT', 0)
-        files = app.client.File.list(parent_id)
-        print json.dumps([vars(f) for f in files], indent=4, default=date_handler)
-
-manager.add_command('list', List())
-
-@manager.command
-def download(limit=None, chunk_size=256, parent_id=None, folder=""):
+@files.command()
+@click.pass_context
+def download(ctx, limit=None, chunk_size=256, parent_id=None, folder="", ignore_existing=False):
     "Download files"
     if parent_id == None:
-        parent_id = app.config.get('PUTIO_ROOT', 0)
-    files = app.client.File.list(parent_id)
-    app.logger.info('%s files found' % len(files))
+        parent_id = ctx.obj['ROOT']
+    files = ctx.obj['CLIENT'].File.list(parent_id)
+
+    logger.info('%s files found' % len(files))
 
     if len(files):
         def func(connection):
@@ -47,13 +47,13 @@ def download(limit=None, chunk_size=256, parent_id=None, folder=""):
                 conn.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (current_file.name, current_file.size))
                 row = conn.fetchone()
 
-                if row is None:
-                    app.logger.debug('downloading file: %s' % current_file)
-                    current_file.download(dest=app.config['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
-                    app.logger.info('downloaded file: %s' % current_file)
+                if row is None or ignore_existing:
+                    logger.debug('downloading file: %s' % current_file.name)
+                    current_file.download(dest=ctx.obj['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
+                    logger.info('downloaded file: %s' % current_file.name)
 
-                    src = os.path.join(app.config['INCOMPLETE'], current_file.name)
-                    dest = os.path.join(app.config['DOWNLOADS'], folder)
+                    src = os.path.join(ctx.obj['INCOMPLETE'], current_file.name)
+                    dest = os.path.join(ctx.obj['DOWNLOADS'], folder)
                     shutil.move(src, dest)
 
                     conn.execute('insert into downloads (id, name, size) values (?, ?, ?)', (current_file.id, current_file.name, current_file.size))
@@ -65,6 +65,6 @@ def download(limit=None, chunk_size=256, parent_id=None, folder=""):
                         if downloaded > limit:
                             break
                 else:
-                    app.logger.warning('file already downloaded at %s : %s' % (row[0], current_file))
+                    logger.warning('file already downloaded at %s : %s' % (row[0], current_file.name))
 
-        with_db(app, func)
+        with_db(func)

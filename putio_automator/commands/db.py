@@ -1,21 +1,27 @@
 """
 Flask commands to manage the download database
 """
-from flask_script import Manager
+import click
+
+from putio_automator import echo, logger
+from putio_automator.cli import cli
 from putio_automator.db import with_db
-from putio_automator.manage import app
 
 
-manager = Manager(usage='Manage download database')
+@cli.group()
+def db():
+    pass
 
-@manager.command
+@db.command()
+@click.argument('name')
 def forget(name):
     "Delete records of previous downloads in the database"
 
     def func(connection):
         "Do the above"
+        logger.debug('Delete downloads with name like %s' % name)
         conn = connection.cursor()
         conn.execute('delete from downloads where name like ?', ('%%%s%%' % name,))
-        print 'Affected rows: %s' % conn.rowcount
+        echo('info', 'Deleted %d rows with name like %s' % (conn.rowcount, name))
 
-    with_db(app, func)
+    with_db(func)

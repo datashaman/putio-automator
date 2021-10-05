@@ -1,54 +1,59 @@
 """
 Flask commands for managing transfers on Put.IO.
 """
-import json
+import click
+import yaml
 
-from flask_script import Command, Manager
 from putio_automator import date_handler
-from putio_automator.manage import app
+from putio_automator.cli import cli
 
 
-manager = Manager(usage='Manage transfers')
+@cli.group()
+def transfers():
+    pass
 
-@manager.command
-def cancel_by_status(statuses):
+@transfers.command()
+@click.pass_context
+def cancel_by_status(ctx, statuses):
     "Cancel transfers by status"
+
     if isinstance(statuses, str):
         statuses = statuses.split(',')
 
     transfer_ids = []
-    for transfer in app.client.Transfer.list():
+    for transfer in ctx.obj['CLIENT'].Transfer.list():
         if transfer.status in statuses:
             transfer_ids.append(transfer.id)
 
     if len(transfer_ids):
-        app.client.Transfer.cancel_multi(transfer_ids)
+        ctx.obj['CLIENT'].Transfer.cancel_multi(transfer_ids)
 
-@manager.command
+@transfers.command()
 def cancel_completed():
     "Cancel completed transfers"
     cancel_by_status('COMPLETED')
 
-@manager.command
+@transfers.command()
 def cancel_seeding():
     "Cancel seeding transfers"
     cancel_by_status('SEEDING')
 
-@manager.command
-def clean():
+@transfers.command()
+@click.pass_context
+def clean(ctx):
     "Clean finished transfers"
-    app.client.Transfer.clean()
+    ctx.obj['CLIENT'].Transfer.clean()
 
-@manager.command
-def groom():
+@transfers.command()
+@click.pass_context
+def groom(ctx):
     "Cancel seeding and completed transfers, and clean afterwards"
-    cancel_by_status(['SEEDING', 'COMPLETED'])
-    clean()
+    ctx.invoke(cancel_by_status, ['SEEDING', 'COMPLETED'])
+    ctx.invoke(clean)
 
-class List(Command):
-    "List transfers: Manually create Flask command cos of name clash with list"
-    def run(self):
-        "List transfers"
-        transfers = app.client.Transfer.list()
-        print json.dumps([vars(t) for t in transfers], indent=4, default=date_handler)
-manager.add_command('list', List())
+@transfers.command()
+@click.pass_context
+def list(ctx):
+    "List transfers"
+    transfers = ctx.obj['CLIENT'].Transfer.list()
+    click.echo(yaml.dump([vars(t) for t in transfers]))
