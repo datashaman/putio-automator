@@ -1,11 +1,11 @@
 *pyc
-/AUTHORS
-/build/
-/ChangeLog
-/config.py
-/dist/
+/*.egg-info/
 /.eggs/
 /.env
-/*.egg-info/
+/AUTHORS
+/ChangeLog
+/build/
+/config.py
+/dist/
 /putio.log
 /tmp/
