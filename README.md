@@ -5,7 +5,7 @@ A suite of commands for managing torrents, transfers and files on **Put.IO**
 Configure Sickrage to use a Torrent black hole folder. Configure this application to
 monitor that folder and download to the same folder used for post-processing in Sickrage.
 
-**Note** Version 2 drops Docker and RPi support. The application should still run just fine in both contexts; however it is no longer directly supported.
+**Note** Version 2 drops Docker and RPi support. The application should still run just fine in both contexts; however it is no longer directly supported. Also, support for Python 2 has been dropped.
 
 ## Table of Contents
 
@@ -22,6 +22,18 @@ monitor that folder and download to the same folder used for post-processing in 
 <!-- toc stop -->
 
 ## Installation
+
+Install _fswatch_ according to your operating system. Further instructions [here](https://github.com/emcrisostomo/fswatch/#getting-fswatch):
+
+    brew install fswatch
+    OR
+    port install fswatch
+    OR
+    pkg install fswatch-mon
+    OR
+    apt install fswatch
+
+_I am investigating a solution that does not require an operating system package, and an easy path for Windows users to use fswatch._
 
 Install the putio-automator package locally **for your user**. System-wide installation is not supported.
 
