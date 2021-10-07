@@ -1,5 +1,5 @@
 """
-Flask command for managing files on Put.IO.
+Command for managing files on Put.IO.
 """
 import click
 import json
@@ -18,6 +18,7 @@ def files():
 
 @files.command()
 @click.pass_context
+@click.option('--parent-id', help='ID of folder to list, defaults to root folder', type=int)
 def list(ctx, parent_id=None):
     "List files"
     if parent_id == None:
@@ -27,7 +28,12 @@ def list(ctx, parent_id=None):
 
 @files.command()
 @click.pass_context
-def download(ctx, limit=None, chunk_size=256, parent_id=None, folder="", ignore_existing=False):
+@click.option('--limit', help='Limit number of files to be downloaded', type=int)
+@click.option('--chunk-size', default=256, help='Chunk size for downloading files in kilobytes')
+@click.option('--parent-id', help='ID of folder to download from, defaults to root folder', type=int)
+@click.option('--folder', default='', help='Local subfolder to store downloads')
+@click.option('--force', help='Force download if it has been seen before, ignores database', is_flag=True)
+def download(ctx, limit=None, chunk_size=256, parent_id=None, folder="", force=False):
     "Download files"
     if parent_id == None:
         parent_id = ctx.obj['ROOT']
@@ -47,7 +53,7 @@ def download(ctx, limit=None, chunk_size=256, parent_id=None, folder="", ignore_
                 conn.execute("select datetime(created_at, 'localtime') from downloads where name = ? and size = ?", (current_file.name, current_file.size))
                 row = conn.fetchone()
 
-                if row is None or ignore_existing:
+                if row is None or force:
                     logger.debug('downloading file: %s' % current_file.name)
                     current_file.download(dest=ctx.obj['INCOMPLETE'], delete_after_download=True, chunk_size=int(chunk_size)*1024)
                     logger.info('downloaded file: %s' % current_file.name)

@@ -1,5 +1,5 @@
 """
-Flask commands for managing config of the application
+Commands for managing config of the application
 """
 
 import appdirs
