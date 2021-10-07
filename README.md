@@ -23,18 +23,6 @@ monitor that folder and download to the same folder used for post-processing in 
 
 ## Installation
 
-Install _fswatch_ according to your operating system. Further instructions [here](https://github.com/emcrisostomo/fswatch/#getting-fswatch):
-
-    brew install fswatch
-    OR
-    port install fswatch
-    OR
-    pkg install fswatch-mon
-    OR
-    apt install fswatch
-
-_I am investigating a solution that does not require an operating system package, and an easy path for Windows users to use fswatch._
-
 Install the putio-automator package locally **for your user**. System-wide installation is not supported.
 
     pip install --user putio-automator

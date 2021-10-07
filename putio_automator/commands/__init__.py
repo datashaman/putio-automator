@@ -1,5 +1,5 @@
 """
-Flask commands
+All commands
 """
 import putio_automator.commands.account
 import putio_automator.commands.config

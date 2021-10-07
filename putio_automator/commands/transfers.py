@@ -1,5 +1,5 @@
 """
-Flask commands for managing transfers on Put.IO.
+Commands for managing transfers on Put.IO.
 """
 import click
 import yaml
@@ -14,6 +14,7 @@ def transfers():
 
 @transfers.command()
 @click.pass_context
+@click.option('--statuses', help='Comma-separated list of statuses to be cancelled')
 def cancel_by_status(ctx, statuses):
     "Cancel transfers by status"
 

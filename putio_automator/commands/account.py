@@ -1,5 +1,5 @@
 """
-Flask commands for managing Put.IO account
+Commands for managing Put.IO account
 """
 
 import click

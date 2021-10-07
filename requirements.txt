@@ -1,7 +1,7 @@
 appdirs
 click
 click-log
-fswatch
 putio.py
 python-dotenv
 pyyaml
+watchdog

@@ -1,5 +1,5 @@
 """
-Flask commands to manage torrents on Put.IO.
+Commands to manage torrents on Put.IO.
 """
 import logging
 logger = logging.getLogger(__name__)
@@ -8,10 +8,14 @@ import click
 import os
 import putiopy
 import subprocess
+import sys
+import time
 
-from fswatch import Monitor
 from putio_automator.cli import cli
 from putio_automator.db import with_db
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 
 @cli.group()
@@ -20,6 +24,7 @@ def torrents():
 
 @torrents.command()
 @click.pass_context
+@click.option('--parent-id', help='ID of folder to download from, defaults to root folder', type=int)
 def add(ctx, parent_id=None):
     "Add a torrent"
     if parent_id == None:
@@ -34,6 +39,9 @@ def add(ctx, parent_id=None):
             conn = connection.cursor()
 
             for name in files:
+                if name[0] == '.':
+                    continue
+
                 path = os.path.join(folder, name)
                 size = os.path.getsize(path)
 
@@ -66,7 +74,11 @@ def add(ctx, parent_id=None):
 
 @torrents.command()
 @click.pass_context
-def watch(ctx, parent_id=None, mount=False):
+@click.option('--parent-id', help='ID of folder to download from, defaults to root folder', type=int)
+@click.option('--mount', help='Mount all filesystems before watching', is_flag=True)
+@click.option('--sleep', default=5, help='Amount of seconds to sleep between filesystem polls')
+@click.option('--wait-for-closed', default=5, help='Amount of seconds to wait after created event to process a torrent')
+def watch(ctx, parent_id=None, mount=False, sleep=5, wait_for_closed=5):
     "Watch a folder for new torrents to add"
 
     if parent_id is None:
@@ -80,15 +92,30 @@ def watch(ctx, parent_id=None, mount=False):
 
     ctx.invoke(add, parent_id=parent_id)
 
-    monitor = Monitor()
-    monitor.add_path(ctx.obj['TORRENTS'])
+    class Handler(FileSystemEventHandler):
+        # We cannot use on_closed because it is not supported
+        # on MacOS's kqueue mechanism, so sleep for a few seconds
+        # to allow the file to be written completely.
+        def on_created(self, event):
+            try:
+                time.sleep(wait_for_closed)
+                torrent_path = event.src_path
+                ctx.obj['CLIENT'].Transfer.add_torrent(torrent_path, parent_id=parent_id)
+                os.unlink(torrent_path)
+                logger.debug('added torrent, on_created event for: %s' % torrent_path)
+            except Exception as e:
+                click.echo('error adding torrent: %s %s' % (torrent_path, e))
+                logger.error('error adding torrent: %s %s' % (torrent_path, e))
 
-    def callback(path, evt_time, flags, flags_num, event_num):
-        torrent_path = path.decode()
-        logger.debug('adding torrent, received event for: %s' % torrent_path)
-        transfer = ctx.obj['CLIENT'].Transfer.add_torrent(path.decode(), parent_id=parent_id)
-        os.unlink(torrent_path)
-        logger.info('added transfer: %s' % transfer)
+    event_handler = Handler()
+    observer = Observer()
 
-    monitor.set_callback(callback)
-    monitor.start()
+    observer.schedule(event_handler, ctx.obj['TORRENTS'], recursive=True)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(sleep)
+    finally:
+        observer.stop()
+        observer.join()

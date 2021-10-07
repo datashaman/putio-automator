@@ -1,5 +1,5 @@
 """
-Flask commands to manage the download database
+Commands to manage the download database
 """
 import click
 
