@@ -1,3 +1,5 @@
+DOCKER_TAG = putio-automator
+
 HOST_DOWNLOADS = `pwd`/tmp/downloads
 HOST_INCOMPLETE = `pwd`/tmp/incomplete
 HOST_TORRENTS = `pwd`/tmp/torrents
@@ -19,3 +21,9 @@ prepare-upload: clean
 
 upload: prepare-upload
 	twine upload dist/*
+
+docker-build:
+	docker build --build-arg VERSION=$(VERSION) -t $(DOCKER_TAG) .
+
+docker-run:
+	docker run -it --rm $(DOCKER_TAG) $(CMD)

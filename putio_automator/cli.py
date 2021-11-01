@@ -11,10 +11,13 @@ import putiopy
 
 from . import find_config
 
+config = None
 config_file = find_config()
-spec = importlib.util.spec_from_file_location('config', config_file)
-config = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(config)
+
+if config_file:
+    spec = importlib.util.spec_from_file_location('config', config_file)
+    config = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(config)
 
 
 @click.group()
@@ -29,20 +32,22 @@ spec.loader.exec_module(config)
 def cli(ctx, token=None, root=None, downloads=None, incomplete=None, torrents=None, log_filename='putio.log', log_level=None):
     ctx.ensure_object(dict)
 
-    if token is None:
-        token = config.PUTIO_TOKEN
-    if root is None:
-        root = config.PUTIO_ROOT
-    if downloads is None:
-        downloads = config.DOWNLOADS
-    if incomplete is None:
-        incomplete = config.INCOMPLETE
-    if torrents is None:
-        torrents = config.TORRENTS
-    if log_level is None:
-        log_level = config.LOG_LEVEL
+    if config:
+        if token is None:
+            token = config.PUTIO_TOKEN
+        if root is None:
+            root = config.PUTIO_ROOT
+        if downloads is None:
+            downloads = config.DOWNLOADS
+        if incomplete is None:
+            incomplete = config.INCOMPLETE
+        if torrents is None:
+            torrents = config.TORRENTS
+        if log_level is None:
+            log_level = config.LOG_LEVEL
 
-    ctx.obj['CLIENT'] = putiopy.Client(token, use_retry=True)
+    if token:
+        ctx.obj['CLIENT'] = putiopy.Client(token, use_retry=True)
 
     ctx.obj['ROOT'] = root
     ctx.obj['DOWNLOADS'] = downloads
