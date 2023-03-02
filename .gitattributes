@@ -1,0 +1,2 @@
+* text=auto eol=lf whitespace=tab-in-indent,blank-at-eol,tabwidth=4
+Makefile text whitespace=-tab-in-indent,blank-at-eol,tabwidth=2
