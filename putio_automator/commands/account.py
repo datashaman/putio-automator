@@ -15,18 +15,19 @@ from putio_automator.cli import cli
 def account():
     pass
 
+
 @account.command()
 @click.pass_context
 def info(ctx):
     "Show account info"
     try:
-        response = ctx.obj['CLIENT'].Account.info()
+        response = ctx.obj["CLIENT"].Account.info()
     except putiopy.ClientError as exc:
-        echo('error', exc.message)
+        echo("error", exc.message)
         ctx.exit(1)
 
-    if response['status'] == 'OK':
-        echo('info', yaml.dump(response['info']))
+    if response["status"] == "OK":
+        echo("info", yaml.dump(response["info"]))
     else:
-        echo('error', yaml.dump(response))
+        echo("error", yaml.dump(response))
         ctx.exit(1)
